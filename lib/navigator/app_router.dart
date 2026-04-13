@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:login_demo/features/intro/splash/splash_page.dart';
 
 class AppRouter {
   static final navigationKey = GlobalKey<NavigatorState>();
@@ -40,7 +41,13 @@ class AppRouter {
       }
       return null;
     },
-    routes: [],
+    routes: [
+      GoRoute(
+        path: _splashPath,
+        name: splashRouteName,
+        builder: (context, state) => SplashPage(),
+      ),
+    ],
   );
 }
 

@@ -19,10 +19,22 @@ class AppTextStyle {
     fontSize: 16,
     fontFamily: fontFamily,
   );
+  static final red = TextStyle(
+    color: AppColors.textRed,
+    fontSize: 16,
+    fontFamily: fontFamily,
+  );
   static const textLabelBlack = TextStyle(
     color: AppColors.textLabelBlack,
     fontSize: 16,
     fontFamily: fontFamily,
+    fontWeight: FontWeight.w600,
+  );
+  static const hintStyle = TextStyle(
+    color: AppColors.textFieldHint,
+    fontSize: 16,
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w600,
   );
 }
 

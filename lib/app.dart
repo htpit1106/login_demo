@@ -15,20 +15,17 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [],
-      child: GestureDetector(
-        onTap: () {
-          hideKeyboard(context);
-        },
-        child: MaterialApp.router(
-          title: AppConfigs.appName,
-          theme: ThemeData.light(
-            useMaterial3: true,
-          ).copyWith(scaffoldBackgroundColor: Colors.white),
-          themeMode: ThemeMode.light,
-          routerConfig: AppRouter.router,
-        ),
+    return GestureDetector(
+      onTap: () {
+        hideKeyboard(context);
+      },
+      child: MaterialApp.router(
+        title: AppConfigs.appName,
+        theme: ThemeData.light(
+          useMaterial3: true,
+        ).copyWith(scaffoldBackgroundColor: Colors.white),
+        themeMode: ThemeMode.light,
+        routerConfig: AppRouter.router,
       ),
     );
   }
