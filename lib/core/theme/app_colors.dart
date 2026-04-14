@@ -12,9 +12,10 @@ class AppColors {
   static const Color backgroundLight = Color(0xFFFFFFFF);
   static const Color backgroundDark = Color(0xFF000000);
   static const Color neutral800 = Color(0xFF252931);
+  static const Color greyEEE = Color(0xFFEEEEEE);
 
   // border
-  static final Color border = Color(0xFFEBECED);
+  static final Color border = Color(0xFFBABDBF);
 
   // text
   static const Color textLabelBlack = Color(0xFF242E37);

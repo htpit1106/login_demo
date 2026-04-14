@@ -39,49 +39,51 @@ class _HomePageChildState extends State<HomePageChild> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-              child: BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        state.userInfo?.fullName ?? "unknow name",
-                        style: AppTextStyle.black.s20.w700,
+    return Scaffold(body: _buildBody());
+  }
+
+  Widget _buildBody() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          elevation: 4,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+            child: BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      state.userInfo?.fullName ?? "unknow name",
+                      style: AppTextStyle.black.s20.w700,
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Text(
+                      state.userInfo?.username ?? "unknow name",
+                      style: AppTextStyle.hintStyle.s14.w400,
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: AppTextButton(
+                        title: "Đăng xuất",
+                        onTap: () {
+                          _cubit.handleLogout();
+                        },
                       ),
-
-                      const SizedBox(height: 8),
-
-                      Text(
-                        state.userInfo?.username ?? "unknow name",
-                        style: AppTextStyle.hintStyle.s14.w400,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      SizedBox(
-                        width: double.infinity,
-                        child: AppTextButton(
-                          title: "Đăng xuất",
-                          onTap: () {
-                            _cubit.logout();
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),

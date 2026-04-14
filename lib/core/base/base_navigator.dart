@@ -5,6 +5,7 @@ import 'package:login_demo/core/constants/ui_constants.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
 import 'package:login_demo/core/global/global_data.dart';
 import 'package:login_demo/core/theme/app_colors.dart';
+import 'package:login_demo/core/widget/dialogs/app_dialog.dart';
 import 'package:login_demo/navigator/app_router.dart';
 
 /// Base class for feature-specific navigators, providing common navigation
@@ -15,11 +16,13 @@ import 'package:login_demo/navigator/app_router.dart';
 class BaseNavigator {
   final BuildContext context;
   late FlushbarNavigator flushbarNavigator;
+  late AppDialog appDialog;
 
   /// Creates a BaseNavigator. Requires the [context] from which navigation
   /// will be initiated.
   BaseNavigator({required this.context}) {
     flushbarNavigator = FlushbarNavigator(context);
+    appDialog = AppDialog(context);
   }
 
   String? _currentLocation;
@@ -50,8 +53,7 @@ class BaseNavigator {
   /// - [pathParameters]: Parameters to be embedded in the route path (e.g., `/users/:id`).
   /// - [queryParameters]: Parameters to be appended to the route path (e.g., `?search=query`).
   /// - [extra]: An optional object to pass along to the route, accessible via `GoRouterState.extra`.
-  void goNamed(
-    String routeName, {
+  void goNamed(String routeName, {
     Map<String, String> pathParameters = const <String, String>{},
     Map<String, dynamic> queryParameters = const <String, dynamic>{},
     Object? extra,
@@ -82,8 +84,7 @@ class BaseNavigator {
   /// potentially returning a result of type `T`.
   ///
   /// Parameters are the same as [goNamed].
-  Future<T?> pushNamed<T extends Object?>(
-    String routeName, {
+  Future<T?> pushNamed<T extends Object?>(String routeName, {
     Map<String, String> pathParameters = const <String, String>{},
     Map<String, dynamic> queryParameters = const <String, dynamic>{},
     Object? extra,

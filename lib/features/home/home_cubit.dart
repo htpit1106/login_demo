@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/data/database/secure_storage_helper.dart';
-import 'package:login_demo/core/data/model/entities/account_entity.dart';
 import 'package:login_demo/features/home/home_navigator.dart';
 import 'package:login_demo/navigator/app_router.dart';
 import 'home_state.dart';
@@ -23,9 +22,23 @@ class HomeCubit extends Cubit<HomeState> {
     emit(state.copyWith(userInfo: userInfo));
   }
 
-  void logout() {
-    SecureStorageHelper.instance.refreshStorage();
-    emit(state.copyWith(userInfo: null));
-    AppRouter.markUnauthenticated();
+  void handleLogout() async {
+    await navigator.appDialog.show(
+      message: "Bạn có muốn đăng xuất không?",
+      textConfirm: "Đăng xuất",
+      textCancel: "Huỷ",
+      onConfirm: () {
+        SecureStorageHelper.instance.refreshStorage();
+        emit(state.copyWith(userInfo: null));
+        AppRouter.markUnauthenticated();
+      },
+      onCancel: () {
+        navigator.navigateBack();
+      },
+    );
   }
+
+  ///SecureStorageHelper.instance.refreshStorage();
+  //     emit(state.copyWith(userInfo: null));
+  //     AppRouter.markUnauthenticated();
 }
