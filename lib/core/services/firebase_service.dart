@@ -38,5 +38,18 @@ class FirestoreService {
     } catch (e) {
       debugPrint(e.toString());
     }
+    return null;
+  }
+
+  Future<List<AccountEntity>?> getListAccounts() async {
+    try {
+      final accounts = await _firestore.collection('accounts').get();
+      return accounts.docs
+          .map((e) => AccountEntity.fromJson(e.data()))
+          .toList();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return null;
   }
 }

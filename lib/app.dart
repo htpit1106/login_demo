@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/configs/app_configs.dart';
-import 'package:login_demo/core/data/repositories/repository_auth.dart';
+import 'package:login_demo/core/data/repositories/auth_repository.dart';
 import 'package:login_demo/core/utils/utils.dart';
 import 'core/theme/app_themes.dart';
 import 'navigator/app_router.dart';

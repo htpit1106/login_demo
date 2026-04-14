@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageHelper {
   static const _accesSession = 'access_session';
+  static const _userInfo = "user_info";
   late final FlutterSecureStorage _storage;
 
   SecureStorageHelper._(this._storage);
@@ -12,6 +13,27 @@ class SecureStorageHelper {
   );
 
   static SecureStorageHelper get instance => _instance;
+
+  void refreshStorage() {
+    clearSession();
+    clearUserInfo();
+  }
+
+  // save userInfo
+  Future<void> saveUserInfo(Map<String, dynamic> userInfo) async {
+    await _storage.write(key: _userInfo, value: jsonEncode(userInfo));
+  }
+
+  // get userInfo
+  Future<Map<String, dynamic>?> getUserInfo() async {
+    final value = await _storage.read(key: _userInfo);
+    return value != null ? jsonDecode(value) : null;
+  }
+
+  // clear
+  Future<void> clearUserInfo() async {
+    await _storage.delete(key: _userInfo);
+  }
 
   Future<void> saveAccessToken({
     required String username,

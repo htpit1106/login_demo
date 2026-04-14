@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
@@ -22,4 +23,13 @@ String generateSalt([int length = 16]) {
 String hashPassword(String password, String salt) {
   final bytes = utf8.encode(password + salt);
   return sha256.convert(bytes).toString();
+}
+
+String generateSessionToken(String username) {
+  return username + DateTime.now().millisecondsSinceEpoch.toString();
+}
+
+Future<bool> checkInternetConnect() async {
+  final result = await Connectivity().checkConnectivity();
+  return result != ConnectivityResult.none;
 }
