@@ -47,6 +47,11 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> onSubmit() async {
     emit(state.copyWith(isSubmit: true, loadLoginStatus: LoadStatus.loading));
+    if (!await checkInternetConnect()) {
+      navigator.flushbarNavigator.showError(
+        message: "Không có kết nối internet",
+      );
+    }
     final AccountEntity? account = await authRepository.login(
       mstController.text,
     );

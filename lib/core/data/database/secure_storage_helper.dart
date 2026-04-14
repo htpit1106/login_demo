@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:login_demo/core/data/model/entities/account_entity.dart';
 
 class SecureStorageHelper {
   static const _accesSession = 'access_session';
@@ -25,9 +26,9 @@ class SecureStorageHelper {
   }
 
   // get userInfo
-  Future<Map<String, dynamic>?> getUserInfo() async {
+  Future<AccountEntity?> getUserInfo() async {
     final value = await _storage.read(key: _userInfo);
-    return value != null ? jsonDecode(value) : null;
+    return value != null ? AccountEntity.fromJson(jsonDecode(value)) : null;
   }
 
   // clear

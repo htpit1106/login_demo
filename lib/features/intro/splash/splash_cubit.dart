@@ -18,7 +18,7 @@ class SplashCubit extends Cubit<SplashState> {
     : super(SplashState());
 
   void init() {
-    getSaveListAccountsToHive();
+    saveListAccountsToHive();
     autoLogin();
   }
 
@@ -51,7 +51,7 @@ class SplashCubit extends Cubit<SplashState> {
     }
   }
 
-  void getSaveListAccountsToHive() async {
+  void saveListAccountsToHive() async {
     if (await checkInternetConnect() == false) return;
     final listAccount = await authRepository.getListAccount();
     HiveHelper.saveAccounts(listAccount);

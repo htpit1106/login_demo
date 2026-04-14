@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/theme/text_style.dart';
 import 'package:login_demo/core/widget/textfield/app_text_button.dart';
+import 'package:login_demo/features/home/home_navigator.dart';
+
+import 'home_cubit.dart';
+import 'home_state.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return HomePageChild();
+    return BlocProvider(
+      create: (context) =>
+          HomeCubit(navigator: HomeNavigator(context: context)),
+      child: HomePageChild(),
+    );
   }
 }
 
@@ -19,6 +28,15 @@ class HomePageChild extends StatefulWidget {
 }
 
 class _HomePageChildState extends State<HomePageChild> {
+  late final HomeCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = context.read<HomeCubit>();
+    _cubit.init();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,25 +50,37 @@ class _HomePageChildState extends State<HomePageChild> {
             elevation: 4,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Full name
-                  Text('full name', style: AppTextStyle.black.s20.w700),
+              child: BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        state.userInfo?.fullName ?? "unknow name",
+                        style: AppTextStyle.black.s20.w700,
+                      ),
 
-                  const SizedBox(height: 8),
+                      const SizedBox(height: 8),
 
-                  // Username
-                  Text("username", style: AppTextStyle.hintStyle.s14.w400),
+                      Text(
+                        state.userInfo?.username ?? "unknow name",
+                        style: AppTextStyle.hintStyle.s14.w400,
+                      ),
 
-                  const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                  // Logout button
-                  SizedBox(
-                    width: double.infinity,
-                    child: AppTextButton(title: "Đăng xuất", onTap: () {}),
-                  ),
-                ],
+                      SizedBox(
+                        width: double.infinity,
+                        child: AppTextButton(
+                          title: "Đăng xuất",
+                          onTap: () {
+                            _cubit.logout();
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
