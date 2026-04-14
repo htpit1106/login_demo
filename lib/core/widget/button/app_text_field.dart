@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:login_demo/core/configs/app_configs.dart';
+import 'package:login_demo/core/constants/asset_constants.dart';
 import 'package:login_demo/core/constants/ui_constants.dart';
-import 'package:login_demo/core/extensions/num_extension.dart';
 import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/theme/text_style.dart';
 import 'package:login_demo/core/utils/tap_gard.dart';
 import 'package:login_demo/core/utils/utils.dart';
+import 'package:login_demo/core/widget/image/app_svg_image.dart';
 
 class AppTextField extends StatelessWidget {
   final TextEditingController? controller;
@@ -155,7 +155,20 @@ class AppTextField extends StatelessWidget {
       errorMaxLines: 10,
       prefixIcon: prefixIcon,
       prefixIconConstraints: BoxConstraints(maxWidth: prefixIconWidth),
-      suffixIcon: suffixIcon,
+      suffixIcon:
+          suffixIcon ??
+          ValueListenableBuilder<TextEditingValue>(
+            valueListenable: controller!,
+            builder: (context, value, _) {
+              if (value.text.isEmpty) return const SizedBox();
+              return IconButton(
+                onPressed: () {
+                  controller!.clear();
+                },
+                icon: const AppSvgImage(AssetConstants.closeCircle, width: 22),
+              );
+            },
+          ),
       suffixIconConstraints: BoxConstraints(maxWidth: suffixIconWidth),
       floatingLabelBehavior: FloatingLabelBehavior.auto,
     );

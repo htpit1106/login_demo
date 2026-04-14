@@ -50,6 +50,7 @@ dependencies:
   #Utilities
   dartz: ^0.10.1
   equatable: ^2.0.8
+  flutter_native_splash:
 
 
   #navigator

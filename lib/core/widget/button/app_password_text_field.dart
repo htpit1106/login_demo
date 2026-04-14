@@ -36,6 +36,8 @@ class AppPasswordTextField extends StatelessWidget {
   final InputDecoration? decoration;
   final bool hideCounter;
   final Color? borderColor;
+  final TextInputAction? textInputAction;
+  final Function()? onSubmitted;
 
   const AppPasswordTextField({
     super.key,
@@ -59,6 +61,8 @@ class AppPasswordTextField extends StatelessWidget {
     this.decoration,
     this.hideCounter = true,
     this.borderColor,
+    this.onSubmitted,
+    this.textInputAction,
   });
 
   @override
@@ -135,20 +139,36 @@ class AppPasswordTextField extends StatelessWidget {
                     return ValueListenableBuilder<bool>(
                       valueListenable: obscureTextController,
                       builder: (context, obscureText, _) {
-                        return IconButton(
-                          splashRadius: 24,
-                          onPressed: () {
-                            obscureTextController.value = !obscureText;
-                          },
-                          icon: obscureText
-                              ? const AppSvgImage(
-                                  AssetConstants.eyeSlash,
-                                  width: 22,
-                                )
-                              : const AppSvgImage(
-                                  AssetConstants.eye,
-                                  width: 22,
-                                ),
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          spacing: 0,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                controller.clear();
+                              },
+                              icon: const AppSvgImage(
+                                AssetConstants.closeCircle,
+                                width: 22,
+                              ),
+                            ),
+                            IconButton(
+                              splashRadius: 24,
+                              onPressed: () {
+                                obscureTextController.value = !obscureText;
+                              },
+                              icon: obscureText
+                                  ? const AppSvgImage(
+                                      AssetConstants.eyeSlash,
+                                      width: 22,
+                                    )
+                                  : const AppSvgImage(
+                                      AssetConstants.eye,
+                                      width: 22,
+                                    ),
+                            ),
+                          ],
                         );
                       },
                     );
@@ -175,6 +195,8 @@ class AppPasswordTextField extends StatelessWidget {
               validator: validator,
               onFieldSubmitted: onFieldSubmitted,
               enabled: enable,
+              textInputAction: textInputAction,
+              onEditingComplete: onSubmitted,
             ),
           ],
         );

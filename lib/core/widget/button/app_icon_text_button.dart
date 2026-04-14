@@ -30,12 +30,19 @@ class AppIconTextButton extends StatelessWidget {
           borderRadius: 4.radius,
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AppSvgImage(iconPath, width: 24, height: 24),
             8.width,
-            Text(label, style: Theme.of(context).textTheme.bodyLarge),
+            Flexible(
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.bodyLarge,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
           ],
         ),
       ),
