@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
 import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/theme/text_style.dart';
-import 'package:login_demo/core/utils/tap_gard.dart';
-import 'package:login_demo/core/widget/image/app_svg_image.dart';
 
 class AppTextButton extends StatelessWidget {
   final Color? filledColor;

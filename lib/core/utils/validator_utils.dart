@@ -33,5 +33,6 @@ class ValidatorUtils {
     if (!mstCCCDRegex.hasMatch(value ?? "")) {
       return "Vui lòng nhập CCCD 12 số hoặc MST hợp lệ (10 số, có thể kèm ‘-XXX’).";
     }
+    return null;
   }
 }

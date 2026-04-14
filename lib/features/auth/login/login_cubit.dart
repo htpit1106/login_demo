@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:login_demo/core/data/model/entities/account_entity.dart';
+import 'package:login_demo/core/data/model/enums/load_status.dart';
+import 'package:login_demo/core/data/repositories/repository_auth.dart';
+import 'package:login_demo/core/utils/utils.dart';
+import 'package:login_demo/features/auth/login/login_navigator.dart';
 import 'package:login_demo/features/auth/login/login_state.dart';
+import 'package:login_demo/navigator/app_router.dart';
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit() : super(const LoginState());
+  final AuthRepository authRepository;
+  final LoginNavigator navigator;
+
+  LoginCubit({required this.authRepository, required this.navigator})
+    : super(const LoginState());
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController mstController = TextEditingController();
   final TextEditingController accountController = TextEditingController();
@@ -15,8 +25,56 @@ class LoginCubit extends Cubit<LoginState> {
 
   bool get isSubmitted => state.isSubmit;
 
-  void isSubmit() {
-    if (state.isSubmit == true) return;
-    emit(state.copyWith(isSubmit: true));
+  void init() {
+    createAccount();
+  }
+
+  void createAccount() {
+    final salt = generateSalt();
+    final account = AccountEntity(
+      taxIdOrId: "0105987432-098",
+      username: "demo",
+      passwordHash: hashPassword("123456", salt),
+      salt: salt,
+      fullName: "Demo User",
+      enable: true,
+      updateAt: DateTime.now(),
+    );
+
+    authRepository.createAccount(account);
+  }
+
+  Future<void> onSubmit() async {
+    emit(state.copyWith(isSubmit: true, loadLoginStatus: LoadStatus.loading));
+    final AccountEntity? account = await authRepository.login(
+      mstController.text,
+    );
+    if (account == null) {
+      _handleLoginFailure();
+    } else {
+      _handleLoginSucces(account);
+    }
+  }
+
+  void _handleLoginFailure() {
+    emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
+    navigator.flushbarNavigator.showError(
+      message: "Thông tin đăng nhập không hợp lệ",
+    );
+  }
+
+  void _handleLoginSucces(AccountEntity account) {
+    final passwordHash = hashPassword(passwordController.text, account.salt!);
+    if (passwordHash != account.passwordHash) {
+      emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
+      navigator.flushbarNavigator.showError(
+        message: "Thông tin đăng nhập không hợp lệ",
+      );
+      return;
+    }
+    emit(state.copyWith(loadLoginStatus: LoadStatus.success));
+    navigator.flushbarNavigator.showSuccess(message: "Đăng nhập thành công");
+    AppRouter.markAuthenticated();
+    navigator.openHome();
   }
 }

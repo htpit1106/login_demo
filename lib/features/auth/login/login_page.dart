@@ -8,6 +8,7 @@ import 'package:login_demo/core/widget/button/app_password_text_field.dart';
 import 'package:login_demo/core/widget/button/app_text_field.dart';
 import 'package:login_demo/core/widget/image/app_svg_image.dart';
 import 'package:login_demo/core/widget/textfield/app_text_button.dart';
+import 'package:login_demo/features/auth/login/login_navigator.dart';
 
 import 'login_cubit.dart';
 
@@ -17,7 +18,10 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<LoginCubit>(
-      create: (context) => LoginCubit(),
+      create: (context) => LoginCubit(
+        authRepository: context.read(),
+        navigator: LoginNavigator(context: context),
+      ),
       child: LoginPageChild(),
     );
   }
@@ -36,6 +40,7 @@ class _LoginPageChildState extends State<LoginPageChild> {
   @override
   void initState() {
     _cubit = context.read<LoginCubit>();
+    _cubit.init();
     super.initState();
   }
 
@@ -145,7 +150,7 @@ class _LoginPageChildState extends State<LoginPageChild> {
 
   void _handleLoginPressed() {
     _unfocusTextField();
-    _cubit.isSubmit();
+    _cubit.onSubmit();
 
     if (_cubit.loginFormKey.currentState?.validate() == true) {}
   }

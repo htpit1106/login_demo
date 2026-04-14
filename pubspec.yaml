@@ -38,6 +38,10 @@ dependencies:
   firebase_core: ^4.6.0
   cloud_firestore: ^6.2.0
 
+  #storage
+  flutter_secure_storage:
+
+
   #state management
   provider: ^6.1.4
   flutter_bloc: ^9.1.1
@@ -55,6 +59,9 @@ dependencies:
 
   #navigator
   go_router:
+
+  #security
+  crypto:
 
 dev_dependencies:
   flutter_test:
@@ -85,6 +92,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/animates/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
