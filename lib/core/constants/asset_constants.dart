@@ -5,7 +5,7 @@ class AssetConstants {
   static const String _iconsBasePath = "assets/icons";
 
   // logo
-  static const String logoApp = "$_imagesBasePath/logo_app.png";
+  static const String logoApp = "$_imagesBasePath/logo_app.svg";
 
   // login
   static const String eye = "$_iconsBasePath/eye.svg";

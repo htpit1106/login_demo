@@ -160,52 +160,49 @@ class AppTextField extends StatelessWidget {
       floatingLabelBehavior: FloatingLabelBehavior.auto,
     );
 
-    return Padding(
-      padding: 16.paddingAll,
-      child: Column(
-        spacing: 8,
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(labelText ?? "", style: labelStyle),
-          TextFormField(
-            onTap: () {
-              // If has other action => hide keyboard
-              if (TapGuard.isLocked) {
-                hideKeyboard(context);
-              }
-              safeAction(() {
-                onTap?.call();
-              });
-            },
+    return Column(
+      spacing: 8,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(labelText ?? "", style: labelStyle),
+        TextFormField(
+          onTap: () {
+            // If has other action => hide keyboard
+            if (TapGuard.isLocked) {
+              hideKeyboard(context);
+            }
+            safeAction(() {
+              onTap?.call();
+            });
+          },
 
-            cursorColor: AppColors.textFieldFocusBorder,
-            onTapOutside: onTapOutside,
-            enabled: enable,
-            readOnly: readOnly,
-            controller: controller,
-            style: style ?? AppTextStyle.black.s16.w400,
-            decoration: (decoration ?? defaultDecoration).copyWith(),
-            validator: validator,
-            autovalidateMode: autovalidateMode,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            onChanged: onChanged,
-            maxLines: obscureText ? 1 : maxLines,
-            minLines: minLines,
-            textInputAction: textInputAction,
-            focusNode: focusNode,
-            autocorrect: autocorrect,
-            enableSuggestions: enableSuggestions,
-            autofillHints: autofillHints,
-            initialValue: initialValue,
-            onFieldSubmitted: onSubmitted,
-            inputFormatters: inputFormatters,
-            showCursor: showCursor,
-            enableInteractiveSelection: enableInteractiveSelection,
-          ),
-        ],
-      ),
+          cursorColor: AppColors.textFieldFocusBorder,
+          onTapOutside: onTapOutside,
+          enabled: enable,
+          readOnly: readOnly,
+          controller: controller,
+          style: style ?? AppTextStyle.black.s16.w400,
+          decoration: (decoration ?? defaultDecoration).copyWith(),
+          validator: validator,
+          autovalidateMode: autovalidateMode,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          onChanged: onChanged,
+          maxLines: obscureText ? 1 : maxLines,
+          minLines: minLines,
+          textInputAction: textInputAction,
+          focusNode: focusNode,
+          autocorrect: autocorrect,
+          enableSuggestions: enableSuggestions,
+          autofillHints: autofillHints,
+          initialValue: initialValue,
+          onFieldSubmitted: onSubmitted,
+          inputFormatters: inputFormatters,
+          showCursor: showCursor,
+          enableInteractiveSelection: enableInteractiveSelection,
+        ),
+      ],
     );
   }
 }

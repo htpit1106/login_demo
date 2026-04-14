@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:login_demo/features/auth/login/login_page.dart';
 import 'package:login_demo/features/intro/splash/splash_page.dart';
 
 class AppRouter {
@@ -29,12 +30,12 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     debugLogDiagnostics: kDebugMode,
-    initialLocation: _splashPath,
+    initialLocation: _loginPath,
     navigatorKey: navigationKey,
     refreshListenable: _authStatusNotifier,
     redirect: (BuildContext context, GoRouterState state) async {
       if (_authStatusNotifier.value == _AuthStatus.unknow) {
-        return _splashPath;
+        return _loginPath;
       }
       if (_authStatusNotifier.value == _AuthStatus.unauthenticated) {
         return _loginPath;
@@ -46,6 +47,11 @@ class AppRouter {
         path: _splashPath,
         name: splashRouteName,
         builder: (context, state) => SplashPage(),
+      ),
+      GoRoute(
+        path: _loginPath,
+        name: loginRouteName,
+        builder: (context, state) => LoginPage(),
       ),
     ],
   );

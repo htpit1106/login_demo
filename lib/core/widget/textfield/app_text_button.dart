@@ -25,22 +25,18 @@ class AppTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: 16.paddingAll,
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: FilledButton(
-          onPressed: onTap,
-
-          style: FilledButton.styleFrom(
-            shadowColor: filledColor,
-            backgroundColor: filledColor,
-            shape: RoundedRectangleBorder(borderRadius: 6.radius),
-            elevation: 1,
-          ),
-          child: Text(title, style: AppTextStyle.white.s16.w600),
+    return SizedBox(
+      width: width,
+      height: height,
+      child: FilledButton(
+        onPressed: onTap,
+        style: FilledButton.styleFrom(
+          shadowColor: filledColor,
+          backgroundColor: filledColor,
+          shape: RoundedRectangleBorder(borderRadius: 6.radius),
+          elevation: 1,
         ),
+        child: Text(title, style: AppTextStyle.white.s16.w600),
       ),
     );
   }

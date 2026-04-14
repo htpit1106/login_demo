@@ -18,23 +18,26 @@ class AppIconTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: UiConstants.paddingMedium,
-        vertical: UiConstants.paddingMedium,
-      ),
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: UiConstants.paddingSmall,
+          vertical: UiConstants.paddingSmall,
+        ),
 
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.border, width: 1),
-        borderRadius: 4.radius,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AppSvgImage(iconPath, width: 24, height: 24),
-          8.width,
-          Text(label, style: Theme.of(context).textTheme.bodyLarge),
-        ],
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.border, width: 1),
+          borderRadius: 4.radius,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AppSvgImage(iconPath, width: 24, height: 24),
+            8.width,
+            Text(label, style: Theme.of(context).textTheme.bodyLarge),
+          ],
+        ),
       ),
     );
   }
