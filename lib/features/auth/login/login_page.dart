@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
@@ -86,6 +87,11 @@ class _LoginPageChildState extends State<LoginPageChild> {
                 signed: true,
                 decimal: true,
               ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  ValidatorUtils.inputNumberRegex,
+                ),
+              ],
               onChanged: (_) {
                 if (_cubit.isSubmitted) {
                   _cubit.loginFormKey.currentState?.validate();
