@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:login_demo/core/configs/app_configs.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
 import 'package:login_demo/core/constants/ui_constants.dart';
-import 'package:login_demo/core/extensions/num_extension.dart';
 import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/theme/text_style.dart';
 import 'package:login_demo/core/widget/image/app_svg_image.dart';
@@ -38,6 +36,8 @@ class AppPasswordTextField extends StatelessWidget {
   final InputDecoration? decoration;
   final bool hideCounter;
   final Color? borderColor;
+  final TextInputAction? textInputAction;
+  final Function()? onSubmitted;
 
   const AppPasswordTextField({
     super.key,
@@ -48,12 +48,12 @@ class AppPasswordTextField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.labelText,
-    this.labelStyle,
+    this.labelStyle = AppTextStyle.textLabelBlack,
     this.hintText,
     this.focusNode,
     this.style,
     this.padding,
-    this.hintStyle,
+    this.hintStyle = AppTextStyle.hintStyle,
     this.errorStyle,
     this.enablePrefixIcon = false,
     this.enableSuffixIcon = false,
@@ -61,13 +61,15 @@ class AppPasswordTextField extends StatelessWidget {
     this.decoration,
     this.hideCounter = true,
     this.borderColor,
+    this.onSubmitted,
+    this.textInputAction,
   });
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: obscureTextController,
-      builder: (context, bool obscureText, child) {
+      builder: (context, bool obscureText, _) {
         final defaultDecoration = InputDecoration(
           contentPadding:
               padding ??
@@ -137,20 +139,36 @@ class AppPasswordTextField extends StatelessWidget {
                     return ValueListenableBuilder<bool>(
                       valueListenable: obscureTextController,
                       builder: (context, obscureText, _) {
-                        return IconButton(
-                          splashRadius: 24,
-                          onPressed: () {
-                            obscureTextController.value = !obscureText;
-                          },
-                          icon: obscureText
-                              ? const AppSvgImage(
-                                  AssetConstants.eyeSlash,
-                                  width: 22,
-                                )
-                              : const AppSvgImage(
-                                  AssetConstants.eye,
-                                  width: 22,
-                                ),
+                        return Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          spacing: 0,
+                          children: [
+                            IconButton(
+                              onPressed: () {
+                                controller.clear();
+                              },
+                              icon: const AppSvgImage(
+                                AssetConstants.closeCircle,
+                                width: 22,
+                              ),
+                            ),
+                            IconButton(
+                              splashRadius: 24,
+                              onPressed: () {
+                                obscureTextController.value = !obscureText;
+                              },
+                              icon: obscureText
+                                  ? const AppSvgImage(
+                                      AssetConstants.eyeSlash,
+                                      width: 22,
+                                    )
+                                  : const AppSvgImage(
+                                      AssetConstants.eye,
+                                      width: 22,
+                                    ),
+                            ),
+                          ],
                         );
                       },
                     );
@@ -158,30 +176,29 @@ class AppPasswordTextField extends StatelessWidget {
                 )
               : null,
         );
-        return Padding(
-          padding: 16.paddingAll,
-          child: Column(
-            spacing: 8,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(labelText ?? "", style: labelStyle),
-              TextFormField(
-                controller: controller,
-                autofillHints: autofillHints,
-                focusNode: focusNode,
-                style: style ?? AppTextStyle.black.bodyLarge.w500,
-                decoration: (decoration ?? defaultDecoration).copyWith(),
-                keyboardType: TextInputType.visiblePassword,
-                onChanged: onChanged,
-                obscureText: obscureTextController.value,
-                obscuringCharacter: '●',
-                validator: validator,
-                onFieldSubmitted: onFieldSubmitted,
-                enabled: enable,
-              ),
-            ],
-          ),
+        return Column(
+          spacing: 8,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(labelText ?? "", style: labelStyle),
+            TextFormField(
+              controller: controller,
+              autofillHints: autofillHints,
+              focusNode: focusNode,
+              style: style ?? AppTextStyle.black.bodyLarge.w500,
+              decoration: (decoration ?? defaultDecoration).copyWith(),
+              keyboardType: TextInputType.visiblePassword,
+              onChanged: onChanged,
+              obscureText: obscureTextController.value,
+              obscuringCharacter: '●',
+              validator: validator,
+              onFieldSubmitted: onFieldSubmitted,
+              enabled: enable,
+              textInputAction: textInputAction,
+              onEditingComplete: onSubmitted,
+            ),
+          ],
         );
       },
     );

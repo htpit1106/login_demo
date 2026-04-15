@@ -3,9 +3,10 @@ class AssetConstants {
 
   static const String _imagesBasePath = "assets/images";
   static const String _iconsBasePath = "assets/icons";
+  static const String _animateBashPath = "assets/animates";
 
   // logo
-  static const String logoApp = "$_imagesBasePath/logo_app.png";
+  static const String logoApp = "$_imagesBasePath/logo_app.svg";
 
   // login
   static const String eye = "$_iconsBasePath/eye.svg";
@@ -15,4 +16,7 @@ class AssetConstants {
   static const String headphone = "$_iconsBasePath/headphone.svg";
   static const String search = "$_iconsBasePath/search.svg";
   static const String facebook = "$_iconsBasePath/facebook.svg";
+
+  //splash
+  static const String splashAnimate = "$_animateBashPath/splash_animate.gif";
 }

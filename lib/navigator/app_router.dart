@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:login_demo/features/auth/login/login_page.dart';
+import 'package:login_demo/features/home/home_page.dart';
 import 'package:login_demo/features/intro/splash/splash_page.dart';
 
 class AppRouter {
@@ -39,6 +41,9 @@ class AppRouter {
       if (_authStatusNotifier.value == _AuthStatus.unauthenticated) {
         return _loginPath;
       }
+      if (_authStatusNotifier.value == _AuthStatus.authenticated) {
+        return _homePath;
+      }
       return null;
     },
     routes: [
@@ -46,6 +51,16 @@ class AppRouter {
         path: _splashPath,
         name: splashRouteName,
         builder: (context, state) => SplashPage(),
+      ),
+      GoRoute(
+        path: _loginPath,
+        name: loginRouteName,
+        builder: (context, state) => LoginPage(),
+      ),
+      GoRoute(
+        path: _homePath,
+        name: homeName,
+        builder: (context, state) => HomePage(),
       ),
     ],
   );

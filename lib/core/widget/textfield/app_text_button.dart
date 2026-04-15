@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
 import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/theme/text_style.dart';
-import 'package:login_demo/core/utils/tap_gard.dart';
-import 'package:login_demo/core/widget/image/app_svg_image.dart';
 
 class AppTextButton extends StatelessWidget {
   final Color? filledColor;
@@ -25,22 +23,18 @@ class AppTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: 16.paddingAll,
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: FilledButton(
-          onPressed: onTap,
-
-          style: FilledButton.styleFrom(
-            shadowColor: filledColor,
-            backgroundColor: filledColor,
-            shape: RoundedRectangleBorder(borderRadius: 6.radius),
-            elevation: 1,
-          ),
-          child: Text(title, style: AppTextStyle.white.s16.w600),
+    return SizedBox(
+      width: width,
+      height: height,
+      child: FilledButton(
+        onPressed: onTap,
+        style: FilledButton.styleFrom(
+          shadowColor: filledColor,
+          backgroundColor: filledColor,
+          shape: RoundedRectangleBorder(borderRadius: 6.radius),
+          elevation: 1,
         ),
+        child: Text(title, style: AppTextStyle.white.s16.w600),
       ),
     );
   }
