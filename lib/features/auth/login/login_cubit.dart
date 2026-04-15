@@ -27,7 +27,7 @@ class LoginCubit extends Cubit<LoginState> {
   bool get isSubmitted => state.isSubmit;
 
   void init() {
-    // createAccount();
+    createAccount();
   }
 
   void createAccount() {
