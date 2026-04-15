@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:login_demo/core/data/database/hive_helper.dart';
 import 'package:login_demo/core/data/database/secure_storage_helper.dart';
 import 'package:login_demo/core/data/model/entities/account_entity.dart';
 import 'package:login_demo/core/data/model/enums/load_status.dart';
@@ -58,13 +59,13 @@ class LoginCubit extends Cubit<LoginState> {
       mstController.text,
     );
     if (account == null) {
-      await _handleLoginFailure();
+      _onAccountNotFound();
     } else {
-      _handleLoginSuccess(account);
+      _handleLogin(account);
     }
   }
 
-  Future<void> _handleLoginFailure() async {
+  void _onAccountNotFound() async {
     emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
     if (!await checkInternetConnect()) {
       navigator.flushbarNavigator.showError(
@@ -72,18 +73,17 @@ class LoginCubit extends Cubit<LoginState> {
       );
       return;
     }
-    navigator.flushbarNavigator.showError(
-      message: "Thông tin đăng nhập không hợp lệ",
-    );
+    navigator.flushbarNavigator.showError(message: "Tài khoản không tồn tại");
   }
 
-  void _handleLoginSuccess(AccountEntity account) {
-    final passwordHash = hashPassword(passwordController.text, account.salt!);
-    if (passwordHash != account.passwordHash) {
-      emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
-      navigator.flushbarNavigator.showError(
-        message: "Thông tin đăng nhập không hợp lệ",
+  void _handleLogin(AccountEntity account) async {
+    bool isVerify = _verifyLoginInfo(account);
+    if (!isVerify) {
+      await HiveHelper.instance.saveAccount(
+        account.copyWith(failedLoginCount: account.failedLoginCount ?? 0 + 1),
       );
+
+      _checkLoginCountLimit(mstController.text);
       return;
     }
     navigator.flushbarNavigator.showSuccess(message: "Đăng nhập thành công");
@@ -95,5 +95,35 @@ class LoginCubit extends Cubit<LoginState> {
     AppRouter.markAuthenticated();
     emit(state.copyWith(loadLoginStatus: LoadStatus.success));
     navigator.openHome();
+  }
+
+  void _checkLoginCountLimit(String taxIdOrId) async {
+    final account = await HiveHelper.instance.getAccount(taxIdOrId);
+    if (account == null) return;
+    if (account.failedLoginCount == null) return;
+    if (account.failedLoginCount! >= 5) {
+      emit(state.copyWith(isLoginCountLimit: true));
+      navigator.flushbarNavigator.showError(message: "Tài khoản đã bị khóa");
+    }
+  }
+
+  bool _verifyLoginInfo(AccountEntity account) {
+    final passwordHash = hashPassword(passwordController.text, account.salt!);
+    if (passwordHash != account.passwordHash) {
+      emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
+      navigator.flushbarNavigator.showError(
+        message: "Thông tin đăng nhập không hợp lệ",
+      );
+      return false;
+    }
+
+    if (accountController.text != account.username) {
+      emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
+      navigator.flushbarNavigator.showError(
+        message: "Thông tin đăng nhập không hợp lệ",
+      );
+      return false;
+    }
+    return true;
   }
 }
