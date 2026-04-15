@@ -105,7 +105,7 @@ class _LoginPageChildState extends State<LoginPageChild> {
               validator: (value) => ValidatorUtils.validateMstOrCCCd(value),
               keyboardType: TextInputType.numberWithOptions(
                 signed: true,
-                decimal: true,
+                decimal: false,
               ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(

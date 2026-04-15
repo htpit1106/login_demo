@@ -6,6 +6,8 @@ class AccountEntity {
   final String? fullName;
   final bool? enable;
   final DateTime? updateAt;
+  final DateTime? lockUntil;
+  final int? failedLoginCount;
 
   AccountEntity({
     this.taxIdOrId,
@@ -15,7 +17,34 @@ class AccountEntity {
     this.fullName,
     this.enable,
     this.updateAt,
+    this.lockUntil,
+    this.failedLoginCount,
   });
+
+  // copywith
+  AccountEntity copyWith({
+    String? taxIdOrId,
+    String? username,
+    String? passwordHash,
+    String? salt,
+    String? fullName,
+    bool? enable,
+    DateTime? updateAt,
+    DateTime? lockUntil,
+    int? failedLoginCount,
+  }) {
+    return AccountEntity(
+      taxIdOrId: taxIdOrId ?? this.taxIdOrId,
+      username: username ?? this.username,
+      passwordHash: passwordHash ?? this.passwordHash,
+      salt: salt ?? this.salt,
+      fullName: fullName ?? this.fullName,
+      enable: enable ?? this.enable,
+      updateAt: updateAt ?? this.updateAt,
+      lockUntil: lockUntil ?? this.lockUntil,
+      failedLoginCount: failedLoginCount ?? this.failedLoginCount,
+    );
+  }
 
   // from json
   factory AccountEntity.fromJson(Map<String, dynamic> json) {
@@ -29,6 +58,10 @@ class AccountEntity {
       updateAt: json['update_at'] != null
           ? DateTime.tryParse(json['update_at'])
           : null,
+      lockUntil: json['lock_until'] != null
+          ? DateTime.tryParse(json['lock_until'])
+          : null,
+      failedLoginCount: json['failed_login_count'] as int?,
     );
   }
 
@@ -41,6 +74,8 @@ class AccountEntity {
       'full_name': fullName,
       'enable': enable,
       'update_at': updateAt?.toIso8601String(),
+      'lock_until': lockUntil?.toIso8601String(),
+      'failed_login_count': failedLoginCount,
     };
   }
 }
