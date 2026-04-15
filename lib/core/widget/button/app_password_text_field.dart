@@ -38,6 +38,7 @@ class AppPasswordTextField extends StatelessWidget {
   final Color? borderColor;
   final TextInputAction? textInputAction;
   final Function()? onSubmitted;
+  final AutovalidateMode? autovalidateMode;
 
   const AppPasswordTextField({
     super.key,
@@ -63,6 +64,7 @@ class AppPasswordTextField extends StatelessWidget {
     this.borderColor,
     this.onSubmitted,
     this.textInputAction,
+    this.autovalidateMode,
   });
 
   @override
@@ -197,6 +199,7 @@ class AppPasswordTextField extends StatelessWidget {
               enabled: enable,
               textInputAction: textInputAction,
               onEditingComplete: onSubmitted,
+              autovalidateMode: autovalidateMode,
             ),
           ],
         );

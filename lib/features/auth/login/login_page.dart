@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
+import 'package:login_demo/core/data/model/enums/load_status.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
 import 'package:login_demo/core/utils/validator_utils.dart';
 import 'package:login_demo/core/widget/button/app_icon_text_button.dart';
@@ -10,6 +12,7 @@ import 'package:login_demo/core/widget/image/app_svg_image.dart';
 import 'package:login_demo/core/widget/textfield/app_text_button.dart';
 import 'package:login_demo/features/auth/login/login_navigator.dart';
 import 'login_cubit.dart';
+import 'login_state.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -51,6 +54,7 @@ class _LoginPageChildState extends State<LoginPageChild> {
     _cubit.accountFocusNode.dispose();
     _cubit.passwordFocusNode.dispose();
     _cubit.mstFocusNode.dispose();
+    _cubit.obscureTextController.dispose();
     super.dispose();
   }
 
@@ -67,14 +71,31 @@ class _LoginPageChildState extends State<LoginPageChild> {
   }
 
   Widget _buiLoginForm() {
-    return SingleChildScrollView(
-      child: Form(
-        key: _cubit.loginFormKey,
-        child: Column(
-          spacing: 24,
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) =>
+          previous.isSubmit != current.isSubmit ||
+          previous.loadLoginStatus != current.loadLoginStatus,
+      builder: (context, state) {
+        return SingleChildScrollView(
+          child: Form(
+            key: _cubit.loginFormKey,
+            child: Column(
+              spacing: 24,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [76.height, _buildListInputForm(), _buildButtonLogin()],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListInputForm() {
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) => previous.isSubmit != current.isSubmit,
+      builder: (context, state) {
+        return Column(
           children: [
-            76.height,
             AppSvgImage(AssetConstants.logoApp),
             AppTextField(
               focusNode: _cubit.mstFocusNode,
@@ -86,11 +107,15 @@ class _LoginPageChildState extends State<LoginPageChild> {
                 signed: true,
                 decimal: true,
               ),
-              onChanged: (_) {
-                if (_cubit.isSubmitted) {
-                  _cubit.loginFormKey.currentState?.validate();
-                }
-              },
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  ValidatorUtils.inputNumberRegex,
+                ),
+              ],
+              autovalidateMode: state.isSubmit
+                  ? AutovalidateMode.always
+                  : AutovalidateMode.disabled,
+
               textInputAction: TextInputAction.next,
               onSubmitted: (_) {
                 FocusScope.of(context).requestFocus(_cubit.accountFocusNode);
@@ -105,11 +130,10 @@ class _LoginPageChildState extends State<LoginPageChild> {
                 value,
                 title: "Tài khoản",
               ),
-              onChanged: (_) {
-                if (_cubit.isSubmitted) {
-                  _cubit.loginFormKey.currentState?.validate();
-                }
-              },
+              autovalidateMode: state.isSubmit
+                  ? AutovalidateMode.always
+                  : AutovalidateMode.disabled,
+
               textInputAction: TextInputAction.next,
               onSubmitted: (_) {
                 FocusScope.of(context).requestFocus(_cubit.passwordFocusNode);
@@ -118,40 +142,48 @@ class _LoginPageChildState extends State<LoginPageChild> {
             AppPasswordTextField(
               focusNode: _cubit.passwordFocusNode,
               controller: _cubit.passwordController,
-              obscureTextController: ObscureTextController(),
+              obscureTextController: _cubit.obscureTextController,
               labelText: "Mật khẩu",
               hintText: "Mật khẩu",
               validator: (value) => ValidatorUtils.validatePassword(value),
               enableSuffixIcon: true,
-              onChanged: (_) {
-                if (_cubit.isSubmitted) {
-                  _cubit.loginFormKey.currentState?.validate();
-                }
-              },
+              autovalidateMode: state.isSubmit
+                  ? AutovalidateMode.always
+                  : AutovalidateMode.disabled,
+
               textInputAction: TextInputAction.done,
               onSubmitted: () {
                 _handleLoginPressed();
               },
             ),
-
-            AppTextButton(
-              title: "Đăng nhâp",
-              width: MediaQuery.widthOf(context),
-              onTap: () {
-                _handleLoginPressed();
-              },
-            ),
           ],
-        ),
-      ),
+        );
+      },
+    );
+  }
+
+  Widget _buildButtonLogin() {
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) =>
+          previous.loadLoginStatus != current.loadLoginStatus,
+      builder: (context, state) {
+        return AppTextButton(
+          title: "Đăng nhâp",
+          width: MediaQuery.widthOf(context),
+          onTap: () {
+            _handleLoginPressed();
+          },
+        );
+      },
     );
   }
 
   void _handleLoginPressed() {
     _unfocusTextField();
-    _cubit.onSubmit();
-
-    if (_cubit.loginFormKey.currentState?.validate() == true) {}
+    _cubit.isSubmitted();
+    if (_cubit.loginFormKey.currentState?.validate() == true) {
+      _cubit.onSubmit();
+    }
   }
 
   void _unfocusTextField() {

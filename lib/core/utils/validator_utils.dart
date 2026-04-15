@@ -3,6 +3,7 @@ class ValidatorUtils {
 
   static final mstCCCDRegex = RegExp(r'^(\d{12}|\d{10}(-\d{3})?|\d{13,14})$');
   static RegExp passwordRegex = RegExp(r'^.{6,50}$');
+  static RegExp inputNumberRegex = RegExp(r'[0-9-]');
 
   static bool isEmptyOrNull(String? value) {
     return value == null || value.isEmpty || value.trim().isEmpty;
