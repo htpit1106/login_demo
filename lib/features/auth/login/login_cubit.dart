@@ -5,6 +5,7 @@ import 'package:login_demo/core/data/model/entities/account_entity.dart';
 import 'package:login_demo/core/data/model/enums/load_status.dart';
 import 'package:login_demo/core/data/repositories/auth_repository.dart';
 import 'package:login_demo/core/utils/utils.dart';
+import 'package:login_demo/core/widget/button/app_password_text_field.dart';
 import 'package:login_demo/features/auth/login/login_navigator.dart';
 import 'package:login_demo/features/auth/login/login_state.dart';
 import 'package:login_demo/navigator/app_router.dart';
@@ -19,12 +20,10 @@ class LoginCubit extends Cubit<LoginState> {
   final TextEditingController mstController = TextEditingController();
   final TextEditingController accountController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
+  final ObscureTextController obscureTextController = ObscureTextController();
   final FocusNode mstFocusNode = FocusNode();
   final FocusNode accountFocusNode = FocusNode();
   final FocusNode passwordFocusNode = FocusNode();
-
-  bool get isSubmitted => state.isSubmit;
 
   void init() {
     createAccount();
@@ -45,20 +44,24 @@ class LoginCubit extends Cubit<LoginState> {
     authRepository.createAccount(account);
   }
 
+  void isSubmitted() {
+    emit(state.copyWith(isSubmit: true));
+  }
+
   Future<void> onSubmit() async {
-    emit(state.copyWith(isSubmit: true, loadLoginStatus: LoadStatus.loading));
+    emit(state.copyWith(loadLoginStatus: LoadStatus.loading));
 
     final AccountEntity? account = await authRepository.login(
       mstController.text,
     );
     if (account == null) {
-      _handleLoginFailure();
+      await _handleLoginFailure();
     } else {
-      _handleLoginSucces(account);
+      _handleLoginSuccess(account);
     }
   }
 
-  void _handleLoginFailure() async {
+  Future<void> _handleLoginFailure() async {
     emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
     if (!await checkInternetConnect()) {
       navigator.flushbarNavigator.showError(
@@ -71,7 +74,7 @@ class LoginCubit extends Cubit<LoginState> {
     );
   }
 
-  void _handleLoginSucces(AccountEntity account) {
+  void _handleLoginSuccess(AccountEntity account) {
     final passwordHash = hashPassword(passwordController.text, account.salt!);
     if (passwordHash != account.passwordHash) {
       emit(state.copyWith(loadLoginStatus: LoadStatus.failure));

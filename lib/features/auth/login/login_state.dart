@@ -18,5 +18,5 @@ class LoginState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [loadLoginStatus];
+  List<Object?> get props => [loadLoginStatus, isSubmit];
 }
