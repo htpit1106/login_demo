@@ -82,85 +82,97 @@ class _LoginPageChildState extends State<LoginPageChild> {
             child: Column(
               spacing: 24,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                76.height,
-                AppSvgImage(AssetConstants.logoApp),
-                AppTextField(
-                  focusNode: _cubit.mstFocusNode,
-                  controller: _cubit.mstController,
-                  labelText: "Mã số thuế",
-                  hintText: "Mã số thuế",
-                  validator: (value) => ValidatorUtils.validateMstOrCCCd(value),
-                  keyboardType: TextInputType.numberWithOptions(
-                    signed: true,
-                    decimal: true,
-                  ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      ValidatorUtils.inputNumberRegex,
-                    ),
-                  ],
-                  autovalidateMode: state.isSubmit
-                      ? AutovalidateMode.always
-                      : AutovalidateMode.disabled,
-
-                  textInputAction: TextInputAction.next,
-                  onSubmitted: (_) {
-                    FocusScope.of(
-                      context,
-                    ).requestFocus(_cubit.accountFocusNode);
-                  },
-                ),
-                AppTextField(
-                  focusNode: _cubit.accountFocusNode,
-                  controller: _cubit.accountController,
-                  labelText: "Tài khoản",
-                  hintText: "Tài khoản",
-                  validator: (value) => ValidatorUtils.validateRequiredField(
-                    value,
-                    title: "Tài khoản",
-                  ),
-                  autovalidateMode: state.isSubmit
-                      ? AutovalidateMode.always
-                      : AutovalidateMode.disabled,
-
-                  textInputAction: TextInputAction.next,
-                  onSubmitted: (_) {
-                    FocusScope.of(
-                      context,
-                    ).requestFocus(_cubit.passwordFocusNode);
-                  },
-                ),
-                AppPasswordTextField(
-                  focusNode: _cubit.passwordFocusNode,
-                  controller: _cubit.passwordController,
-                  obscureTextController: _cubit.obscureTextController,
-                  labelText: "Mật khẩu",
-                  hintText: "Mật khẩu",
-                  validator: (value) => ValidatorUtils.validatePassword(value),
-                  enableSuffixIcon: true,
-                  autovalidateMode: state.isSubmit
-                      ? AutovalidateMode.always
-                      : AutovalidateMode.disabled,
-
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: () {
-                    _handleLoginPressed();
-                  },
-                ),
-
-                AppTextButton(
-                  title: "Đăng nhâp",
-                  width: MediaQuery.widthOf(context),
-                  onTap: state.loadLoginStatus == LoadStatus.loading
-                      ? null
-                      : () {
-                          _handleLoginPressed();
-                        },
-                ),
-              ],
+              children: [76.height, _buildListInputForm(), _buildButtonLogin()],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  Widget _buildListInputForm() {
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) => previous.isSubmit != current.isSubmit,
+      builder: (context, state) {
+        return Column(
+          children: [
+            AppSvgImage(AssetConstants.logoApp),
+            AppTextField(
+              focusNode: _cubit.mstFocusNode,
+              controller: _cubit.mstController,
+              labelText: "Mã số thuế",
+              hintText: "Mã số thuế",
+              validator: (value) => ValidatorUtils.validateMstOrCCCd(value),
+              keyboardType: TextInputType.numberWithOptions(
+                signed: true,
+                decimal: true,
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  ValidatorUtils.inputNumberRegex,
+                ),
+              ],
+              autovalidateMode: state.isSubmit
+                  ? AutovalidateMode.always
+                  : AutovalidateMode.disabled,
+
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) {
+                FocusScope.of(context).requestFocus(_cubit.accountFocusNode);
+              },
+            ),
+            AppTextField(
+              focusNode: _cubit.accountFocusNode,
+              controller: _cubit.accountController,
+              labelText: "Tài khoản",
+              hintText: "Tài khoản",
+              validator: (value) => ValidatorUtils.validateRequiredField(
+                value,
+                title: "Tài khoản",
+              ),
+              autovalidateMode: state.isSubmit
+                  ? AutovalidateMode.always
+                  : AutovalidateMode.disabled,
+
+              textInputAction: TextInputAction.next,
+              onSubmitted: (_) {
+                FocusScope.of(context).requestFocus(_cubit.passwordFocusNode);
+              },
+            ),
+            AppPasswordTextField(
+              focusNode: _cubit.passwordFocusNode,
+              controller: _cubit.passwordController,
+              obscureTextController: _cubit.obscureTextController,
+              labelText: "Mật khẩu",
+              hintText: "Mật khẩu",
+              validator: (value) => ValidatorUtils.validatePassword(value),
+              enableSuffixIcon: true,
+              autovalidateMode: state.isSubmit
+                  ? AutovalidateMode.always
+                  : AutovalidateMode.disabled,
+
+              textInputAction: TextInputAction.done,
+              onSubmitted: () {
+                _handleLoginPressed();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildButtonLogin() {
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) =>
+          previous.loadLoginStatus != current.loadLoginStatus,
+      builder: (context, state) {
+        return AppTextButton(
+          title: "Đăng nhâp",
+          width: MediaQuery.widthOf(context),
+          onTap: () {
+            _handleLoginPressed();
+          },
         );
       },
     );

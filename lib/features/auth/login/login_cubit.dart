@@ -45,10 +45,12 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void isSubmitted() {
+    if (state.isSubmit) return;
     emit(state.copyWith(isSubmit: true));
   }
 
   Future<void> onSubmit() async {
+    if (state.loadLoginStatus == LoadStatus.loading) return;
     emit(state.copyWith(loadLoginStatus: LoadStatus.loading));
 
     final AccountEntity? account = await authRepository.login(
