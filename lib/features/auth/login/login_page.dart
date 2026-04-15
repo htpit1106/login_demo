@@ -9,8 +9,6 @@ import 'package:login_demo/core/widget/button/app_text_field.dart';
 import 'package:login_demo/core/widget/image/app_svg_image.dart';
 import 'package:login_demo/core/widget/textfield/app_text_button.dart';
 import 'package:login_demo/features/auth/login/login_navigator.dart';
-import 'package:login_demo/features/auth/login/login_state.dart';
-
 import 'login_cubit.dart';
 
 class LoginPage extends StatelessWidget {

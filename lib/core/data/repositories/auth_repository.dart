@@ -19,7 +19,7 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<void> createAccount(AccountEntity account) async {
     try {
       await _firestoreService.createAccount(account);
-      SecureStorageHelper.instance.saveUserInfo(account.toJson());
+      await SecureStorageHelper.instance.saveUserInfo(account.toJson());
     } catch (e) {
       // silent error handle
     }
@@ -28,18 +28,17 @@ class AuthRepositoryImpl extends AuthRepository {
   @override
   Future<AccountEntity?> login(String taxIdOrId) async {
     try {
-      final isConnectInternet = await checkInternetConnect();
-      if (isConnectInternet) {
+      final isOnline = await checkInternetConnect();
+      if (isOnline) {
         final accountFirebase = await _firestoreService.getAccountByTaxIdOrId(
           taxIdOrId,
         );
         if (accountFirebase != null) {
+          HiveHelper.instance.saveAccount(accountFirebase);
           return accountFirebase;
         }
-        final accountHive = await HiveHelper.getAccount(taxIdOrId);
-        return accountHive;
       } else {
-        final accountHive = await HiveHelper.getAccount(taxIdOrId);
+        final accountHive = await HiveHelper.instance.getAccount(taxIdOrId);
         if (accountHive != null) {
           return accountHive;
         }

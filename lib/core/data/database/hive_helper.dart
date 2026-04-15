@@ -1,4 +1,8 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
+import 'package:login_demo/core/configs/app_configs.dart';
 import 'package:login_demo/core/data/model/entities/account_entity.dart';
 
 class HiveHelper {
@@ -8,32 +12,55 @@ class HiveHelper {
 
   static HiveHelper get instance => _instance;
 
-  static const _boxName = "accounts";
+  Box? _box;
+  final String _boxName = AppConfigs.hiveBoxName;
 
-  static Future<Box> _openBox() async {
-    return await Hive.openBox(_boxName);
+  Future<Box> _openBox() async {
+    if (_box != null && _box!.isOpen) return _box!;
+    _box = await Hive.openBox(_boxName);
+    return _box!;
   }
 
-  static Future<void> saveAccounts(List<AccountEntity>? accounts) async {
-    final box = await Hive.openBox('accounts');
+  Future<void> saveAccounts(List<AccountEntity>? accounts) async {
+    try {
+      final box = await Hive.openBox('accounts');
 
-    if (accounts == null) return;
-    for (var acc in accounts) {
-      await box.put(acc.taxIdOrId, acc.toJson());
+      if (accounts == null) return;
+      final map = {for (var acc in accounts) acc.taxIdOrId: acc.toJson()};
+
+      await box.putAll(map);
+    } catch (e) {
+      debugPrint(e.toString());
     }
   }
 
-  static Future<AccountEntity?> getAccount(String taxIdOrId) async {
-    final box = await _openBox();
-    final data = box.get(taxIdOrId);
-
-    if (data == null) return null;
-
-    return AccountEntity.fromJson(Map<String, dynamic>.from(data));
+  Future<void> saveAccount(AccountEntity account) async {
+    try {
+      final box = await _openBox();
+      await box.put(account.taxIdOrId, account.toJson());
+    } catch (e) {
+      log(e.toString());
+    }
   }
 
-  static Future<void> clear() async {
-    final box = await _openBox();
-    await box.clear();
+  Future<AccountEntity?> getAccount(String taxIdOrId) async {
+    try {
+      final box = await _openBox();
+      final data = box.get(taxIdOrId);
+      if (data == null) return null;
+      return AccountEntity.fromJson(data);
+    } catch (e) {
+      log(e.toString());
+      return null;
+    }
+  }
+
+  Future<void> clear() async {
+    try {
+      final box = await _openBox();
+      await box.clear();
+    } catch (e, st) {
+      log('Hive clear error: $e', stackTrace: st);
+    }
   }
 }

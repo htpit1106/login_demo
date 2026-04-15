@@ -54,6 +54,6 @@ class SplashCubit extends Cubit<SplashState> {
   void saveListAccountsToHive() async {
     if (await checkInternetConnect() == false) return;
     final listAccount = await authRepository.getListAccount();
-    HiveHelper.saveAccounts(listAccount);
+    HiveHelper.instance.saveAccounts(listAccount);
   }
 }

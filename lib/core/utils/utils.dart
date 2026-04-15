@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:crypto/crypto.dart';
@@ -30,6 +31,10 @@ String generateSessionToken(String username) {
 }
 
 Future<bool> checkInternetConnect() async {
-  final result = await Connectivity().checkConnectivity();
-  return result != ConnectivityResult.none;
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+  } catch (_) {
+    return false;
+  }
 }

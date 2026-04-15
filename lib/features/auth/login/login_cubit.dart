@@ -27,7 +27,7 @@ class LoginCubit extends Cubit<LoginState> {
   bool get isSubmitted => state.isSubmit;
 
   void init() {
-    createAccount();
+    // createAccount();
   }
 
   void createAccount() {
@@ -47,11 +47,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> onSubmit() async {
     emit(state.copyWith(isSubmit: true, loadLoginStatus: LoadStatus.loading));
-    if (!await checkInternetConnect()) {
-      navigator.flushbarNavigator.showError(
-        message: "Không có kết nối internet",
-      );
-    }
+
     final AccountEntity? account = await authRepository.login(
       mstController.text,
     );
@@ -62,8 +58,14 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  void _handleLoginFailure() {
+  void _handleLoginFailure() async {
     emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
+    if (!await checkInternetConnect()) {
+      navigator.flushbarNavigator.showError(
+        message: "Không có kết nối internet",
+      );
+      return;
+    }
     navigator.flushbarNavigator.showError(
       message: "Thông tin đăng nhập không hợp lệ",
     );
@@ -86,7 +88,6 @@ class LoginCubit extends Cubit<LoginState> {
     );
     AppRouter.markAuthenticated();
     emit(state.copyWith(loadLoginStatus: LoadStatus.success));
-
     navigator.openHome();
   }
 }
