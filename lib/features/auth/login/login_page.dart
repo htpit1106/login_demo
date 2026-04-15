@@ -77,12 +77,18 @@ class _LoginPageChildState extends State<LoginPageChild> {
           previous.loadLoginStatus != current.loadLoginStatus,
       builder: (context, state) {
         return SingleChildScrollView(
-          child: Form(
-            key: _cubit.loginFormKey,
-            child: Column(
-              spacing: 24,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [76.height, _buildListInputForm(), _buildButtonLogin()],
+          child: AutofillGroup(
+            child: Form(
+              key: _cubit.loginFormKey,
+              child: Column(
+                spacing: 24,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  76.height,
+                  _buildListInputForm(),
+                  _buildButtonLogin(),
+                ],
+              ),
             ),
           ),
         );
@@ -121,11 +127,14 @@ class _LoginPageChildState extends State<LoginPageChild> {
                 FocusScope.of(context).requestFocus(_cubit.accountFocusNode);
               },
             ),
+
             AppTextField(
               focusNode: _cubit.accountFocusNode,
               controller: _cubit.accountController,
               labelText: "Tài khoản",
               hintText: "Tài khoản",
+              autofillHints: [AutofillHints.username],
+
               validator: (value) => ValidatorUtils.validateRequiredField(
                 value,
                 title: "Tài khoản",
@@ -147,6 +156,7 @@ class _LoginPageChildState extends State<LoginPageChild> {
               hintText: "Mật khẩu",
               validator: (value) => ValidatorUtils.validatePassword(value),
               enableSuffixIcon: true,
+              autofillHints: [AutofillHints.password],
               autovalidateMode: state.isSubmit
                   ? AutovalidateMode.always
                   : AutovalidateMode.disabled,
