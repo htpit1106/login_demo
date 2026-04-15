@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
+import 'package:login_demo/core/utils/tap_gard.dart';
 import 'package:login_demo/core/utils/validator_utils.dart';
 import 'package:login_demo/core/widget/button/app_icon_text_button.dart';
 import 'package:login_demo/core/widget/button/app_password_text_field.dart';
@@ -155,9 +156,10 @@ class _LoginPageChildState extends State<LoginPageChild> {
 
   void _handleLoginPressed() {
     _unfocusTextField();
-    _cubit.onSubmit();
 
-    if (_cubit.loginFormKey.currentState?.validate() == true) {}
+    if (_cubit.loginFormKey.currentState?.validate() == true) {
+      _cubit.onSubmit();
+    }
   }
 
   void _unfocusTextField() {
