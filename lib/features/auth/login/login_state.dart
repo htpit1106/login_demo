@@ -25,5 +25,5 @@ class LoginState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [loadLoginStatus, isSubmit];
+  List<Object?> get props => [loadLoginStatus, isSubmit, isLoginCountLimit];
 }

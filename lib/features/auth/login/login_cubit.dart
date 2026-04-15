@@ -77,13 +77,29 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void _handleLogin(AccountEntity account) async {
+    // neus lockuti < datetime.now
+    if (account.enable == false) {
+      if (account.lockUntil != null &&
+          !DateTime.now().isBefore(account.lockUntil!)) {
+        _handleExpiredLockLogin(account);
+      } else {
+        emit(
+          state.copyWith(
+            isLoginCountLimit: true,
+            loadLoginStatus: LoadStatus.failure,
+          ),
+        );
+      }
+    }
     bool isVerify = _verifyLoginInfo(account);
-    if (!isVerify) {
-      await HiveHelper.instance.saveAccount(
-        account.copyWith(failedLoginCount: account.failedLoginCount ?? 0 + 1),
-      );
 
-      _checkLoginCountLimit(mstController.text);
+    if (!isVerify) {
+      await _checkLoginCountLimit(mstController.text);
+      navigator.flushbarNavigator.showError(
+        message: state.isLoginCountLimit
+            ? "Tài khoản đã bị khóa"
+            : "Thông tin đăng nhập không hợp lệ",
+      );
       return;
     }
     navigator.flushbarNavigator.showSuccess(message: "Đăng nhập thành công");
@@ -97,33 +113,42 @@ class LoginCubit extends Cubit<LoginState> {
     navigator.openHome();
   }
 
-  void _checkLoginCountLimit(String taxIdOrId) async {
+  Future<void> _checkLoginCountLimit(String taxIdOrId) async {
     final account = await HiveHelper.instance.getAccount(taxIdOrId);
     if (account == null) return;
-    if (account.failedLoginCount == null) return;
-    if (account.failedLoginCount! >= 5) {
+
+    final newCount = (account.failedLoginCount ?? 0) + 1;
+
+    await HiveHelper.instance.saveAccount(
+      account.copyWith(failedLoginCount: newCount),
+    );
+
+    if (newCount >= 3) {
       emit(state.copyWith(isLoginCountLimit: true));
-      navigator.flushbarNavigator.showError(message: "Tài khoản đã bị khóa");
+      await authRepository.lockUser(taxIdOrId);
     }
   }
 
   bool _verifyLoginInfo(AccountEntity account) {
     final passwordHash = hashPassword(passwordController.text, account.salt!);
+
     if (passwordHash != account.passwordHash) {
       emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
-      navigator.flushbarNavigator.showError(
-        message: "Thông tin đăng nhập không hợp lệ",
-      );
       return false;
     }
 
     if (accountController.text != account.username) {
       emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
-      navigator.flushbarNavigator.showError(
-        message: "Thông tin đăng nhập không hợp lệ",
-      );
       return false;
     }
+
     return true;
+  }
+
+  void _handleExpiredLockLogin(AccountEntity account) {
+    HiveHelper.instance.saveAccount(
+      account.copyWith(failedLoginCount: 0, lockUntil: null),
+    );
+    emit(state.copyWith(isLoginCountLimit: false));
   }
 }

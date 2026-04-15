@@ -10,6 +10,8 @@ abstract class AuthRepository {
   Future<AccountEntity?> login(String taxIdOrId);
 
   Future<List<AccountEntity>?> getListAccount();
+
+  Future<void> lockUser(String taxIdOrId);
 }
 
 class AuthRepositoryImpl extends AuthRepository {
@@ -34,8 +36,14 @@ class AuthRepositoryImpl extends AuthRepository {
           taxIdOrId,
         );
         if (accountFirebase != null) {
-          HiveHelper.instance.saveAccount(accountFirebase);
-          return accountFirebase;
+          final local = await HiveHelper.instance.getAccount(taxIdOrId);
+
+          final merged = accountFirebase.copyWith(
+            failedLoginCount: local?.failedLoginCount ?? 0,
+          );
+
+          await HiveHelper.instance.saveAccount(merged);
+          return merged;
         }
       } else {
         final accountHive = await HiveHelper.instance.getAccount(taxIdOrId);
@@ -59,5 +67,12 @@ class AuthRepositoryImpl extends AuthRepository {
       // silent error handle
       return null;
     }
+  }
+
+  @override
+  Future<void> lockUser(String taxIdOrId) async {
+    try {
+      await _firestoreService.lockUser(taxIdOrId);
+    } catch (e) {}
   }
 }

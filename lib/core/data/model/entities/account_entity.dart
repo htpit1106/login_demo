@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AccountEntity {
   final String? taxIdOrId;
   final String? username;
@@ -18,7 +20,7 @@ class AccountEntity {
     this.enable,
     this.updateAt,
     this.lockUntil,
-    this.failedLoginCount,
+    this.failedLoginCount = 0,
   });
 
   // copywith
@@ -56,10 +58,10 @@ class AccountEntity {
       fullName: json['full_name'] as String?,
       enable: json['enable'] as bool?,
       updateAt: json['update_at'] != null
-          ? DateTime.tryParse(json['update_at'])
+          ? DateTime.parse(json['update_at'] as String)
           : null,
       lockUntil: json['lock_until'] != null
-          ? DateTime.tryParse(json['lock_until'])
+          ? DateTime.parse(json['lock_until'] as String)
           : null,
       failedLoginCount: json['failed_login_count'] as int?,
     );
