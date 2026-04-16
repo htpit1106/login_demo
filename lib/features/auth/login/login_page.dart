@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
-import 'package:login_demo/core/data/model/enums/load_status.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
 import 'package:login_demo/core/utils/validator_utils.dart';
 import 'package:login_demo/core/widget/button/app_icon_text_button.dart';
