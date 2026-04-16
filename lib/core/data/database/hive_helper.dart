@@ -23,7 +23,7 @@ class HiveHelper {
 
   Future<void> saveAccounts(List<AccountEntity>? accounts) async {
     try {
-      final box = await Hive.openBox('accounts');
+      final box = await _openBox();
 
       if (accounts == null) return;
       final map = {for (var acc in accounts) acc.taxIdOrId: acc.toJson()};
@@ -48,9 +48,9 @@ class HiveHelper {
       final box = await _openBox();
       final data = box.get(taxIdOrId);
       if (data == null) return null;
-      return AccountEntity.fromJson(data);
+      return AccountEntity.fromJson(Map<String, dynamic>.from(data));
     } catch (e) {
-      log(e.toString());
+      log('Hive getAccount error: $e');
       return null;
     }
   }

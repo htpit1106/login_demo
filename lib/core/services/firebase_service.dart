@@ -52,4 +52,28 @@ class FirestoreService {
     }
     return null;
   }
+
+  Future<void> lockOrUnlockUser(
+    String taxIdOrId, {
+    required bool enable,
+  }) async {
+    try {
+      if (enable) {
+        await _firestore.collection('accounts').doc(taxIdOrId).update({
+          'enable': true,
+          'failed_login_count': 0,
+          'lock_until': null,
+        });
+        return;
+      }
+      final lockUntil = DateTime.now().toUtc().add(const Duration(seconds: 5));
+
+      await _firestore.collection('accounts').doc(taxIdOrId).update({
+        'enable': false,
+        'lock_until': lockUntil.toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 }

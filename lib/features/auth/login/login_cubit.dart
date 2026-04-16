@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:login_demo/core/data/database/hive_helper.dart';
 import 'package:login_demo/core/data/database/secure_storage_helper.dart';
 import 'package:login_demo/core/data/model/entities/account_entity.dart';
 import 'package:login_demo/core/data/model/enums/load_status.dart';
+import 'package:login_demo/core/data/model/enums/login_status.dart';
 import 'package:login_demo/core/data/repositories/auth_repository.dart';
 import 'package:login_demo/core/utils/utils.dart';
 import 'package:login_demo/core/widget/button/app_password_text_field.dart';
@@ -51,46 +54,71 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> onSubmit() async {
     if (state.loadLoginStatus == LoadStatus.loading) return;
+
     emit(state.copyWith(loadLoginStatus: LoadStatus.loading));
 
-    final AccountEntity? account = await authRepository.login(
-      mstController.text,
+    final result = await authRepository.login(
+      taxIdOrId: mstController.text,
+      password: passwordController.text,
+      username: accountController.text,
     );
-    if (account == null) {
-      await _handleLoginFailure();
-    } else {
-      _handleLoginSuccess(account);
+
+    switch (result?.status) {
+      case LoginStatus.success:
+        emit(state.copyWith(loginStatus: LoginStatus.success));
+        _handleSuccess(result!.account!);
+        break;
+
+      case LoginStatus.invalid:
+        await _handleInvalidLogin(result!.account!);
+        _showError("Thông tin đăng nhập không hợp lệ");
+        break;
+
+      case LoginStatus.locked:
+        _showError("Tài khoản đã bị khóa");
+        break;
+
+      case LoginStatus.notFound:
+        _showError("Tài khoản không tồn tại");
+        break;
+
+      case LoginStatus.noInternet:
+        _showError("Không có internet");
+        break;
+      default:
+        _showError("Đã có lỗi xảy ra");
     }
   }
 
-  Future<void> _handleLoginFailure() async {
+  void _showError(String message) {
+    navigator.flushbarNavigator.showError(message: message);
     emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
-    if (!await checkInternetConnect()) {
-      navigator.flushbarNavigator.showError(
-        message: "Không có kết nối internet",
-      );
-      return;
-    }
-    navigator.flushbarNavigator.showError(
-      message: "Thông tin đăng nhập không hợp lệ",
-    );
   }
 
-  void _handleLoginSuccess(AccountEntity account) {
-    final passwordHash = hashPassword(passwordController.text, account.salt!);
-    if (passwordHash != account.passwordHash) {
-      emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
-      navigator.flushbarNavigator.showError(
-        message: "Thông tin đăng nhập không hợp lệ",
-      );
-      return;
+  Future<void> _handleInvalidLogin(AccountEntity account) async {
+    await _increaseFailedCount(account);
+  }
+
+  Future<void> _increaseFailedCount(AccountEntity account) async {
+    final newCount = (account.failedLoginCount ?? 0) + 1;
+    final updatedAccount = account.copyWith(failedLoginCount: newCount);
+    await HiveHelper.instance.saveAccount(updatedAccount);
+    if (newCount >= 5) {
+      authRepository.lockUser(account.taxIdOrId!);
+      emit(state.copyWith(isLoginCountLimit: true));
     }
-    navigator.flushbarNavigator.showSuccess(message: "Đăng nhập thành công");
+  }
+
+  void _handleSuccess(AccountEntity account) {
     final sessionToken = generateSessionToken(account.username!);
+
     SecureStorageHelper.instance.saveAccessToken(
       username: account.username!,
       sessionToken: sessionToken,
     );
+
+    navigator.flushbarNavigator.showSuccess(message: "Đăng nhập thành công");
+
     AppRouter.markAuthenticated();
     emit(state.copyWith(loadLoginStatus: LoadStatus.success));
     navigator.openHome();
