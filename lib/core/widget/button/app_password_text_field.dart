@@ -39,6 +39,7 @@ class AppPasswordTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final Function()? onSubmitted;
   final AutovalidateMode? autovalidateMode;
+  final Widget? suffixIcon;
 
   const AppPasswordTextField({
     super.key,
@@ -65,6 +66,7 @@ class AppPasswordTextField extends StatelessWidget {
     this.onSubmitted,
     this.textInputAction,
     this.autovalidateMode,
+    this.suffixIcon,
   });
 
   @override
@@ -130,53 +132,55 @@ class AppPasswordTextField extends StatelessWidget {
           errorStyle: errorStyle ?? AppTextStyle.red.s12,
           errorMaxLines: 10,
           prefixIcon: enablePrefixIcon ? const Icon(Icons.lock_outline) : null,
-          suffixIcon: enableSuffixIcon
-              ? ValueListenableBuilder<TextEditingValue>(
-                  valueListenable: controller,
-                  builder: (context, value, _) {
-                    final hasText = value.text.isNotEmpty;
+          suffixIcon:
+              suffixIcon ??
+              (enableSuffixIcon
+                  ? ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: controller,
+                      builder: (context, value, _) {
+                        final hasText = value.text.isNotEmpty;
 
-                    if (!hasText) return const SizedBox();
+                        if (!hasText) return const SizedBox();
 
-                    return ValueListenableBuilder<bool>(
-                      valueListenable: obscureTextController,
-                      builder: (context, obscureText, _) {
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          spacing: 0,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                controller.clear();
-                              },
-                              icon: const AppSvgImage(
-                                AssetConstants.closeCircle,
-                                width: 22,
-                              ),
-                            ),
-                            IconButton(
-                              splashRadius: 24,
-                              onPressed: () {
-                                obscureTextController.value = !obscureText;
-                              },
-                              icon: obscureText
-                                  ? const AppSvgImage(
-                                      AssetConstants.eyeSlash,
-                                      width: 22,
-                                    )
-                                  : const AppSvgImage(
-                                      AssetConstants.eye,
-                                      width: 22,
-                                    ),
-                            ),
-                          ],
+                        return ValueListenableBuilder<bool>(
+                          valueListenable: obscureTextController,
+                          builder: (context, obscureText, _) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              spacing: 0,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    controller.clear();
+                                  },
+                                  icon: const AppSvgImage(
+                                    AssetConstants.closeCircle,
+                                    width: 22,
+                                  ),
+                                ),
+                                IconButton(
+                                  splashRadius: 24,
+                                  onPressed: () {
+                                    obscureTextController.value = !obscureText;
+                                  },
+                                  icon: obscureText
+                                      ? const AppSvgImage(
+                                          AssetConstants.eyeSlash,
+                                          width: 22,
+                                        )
+                                      : const AppSvgImage(
+                                          AssetConstants.eye,
+                                          width: 22,
+                                        ),
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
-                    );
-                  },
-                )
-              : null,
+                    )
+                  : null),
         );
         return Column(
           spacing: 8,

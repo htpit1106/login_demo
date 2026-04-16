@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/data/database/hive_helper.dart';
 import 'package:login_demo/core/data/database/secure_storage_helper.dart';
@@ -71,6 +70,7 @@ class LoginCubit extends Cubit<LoginState> {
 
       case LoginStatus.invalid:
         await _handleInvalidLogin(result!.account!);
+
         _showError("Thông tin đăng nhập không hợp lệ");
         break;
 
@@ -96,6 +96,7 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> _handleInvalidLogin(AccountEntity account) async {
+    emit(state.copyWith(loadLoginStatus: LoadStatus.failure));
     await _increaseFailedCount(account);
   }
 

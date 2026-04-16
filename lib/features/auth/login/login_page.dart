@@ -11,6 +11,7 @@ import 'package:login_demo/core/widget/button/app_text_field.dart';
 import 'package:login_demo/core/widget/image/app_svg_image.dart';
 import 'package:login_demo/core/widget/textfield/app_text_button.dart';
 import 'package:login_demo/features/auth/login/login_navigator.dart';
+import 'package:login_demo/features/auth/login/widget/shake_animation_widget.dart';
 import 'login_cubit.dart';
 import 'login_state.dart';
 
@@ -71,118 +72,130 @@ class _LoginPageChildState extends State<LoginPageChild> {
   }
 
   Widget _buiLoginForm() {
-    return BlocBuilder<LoginCubit, LoginState>(
-      buildWhen: (previous, current) =>
-          previous.isSubmit != current.isSubmit ||
-          previous.loadLoginStatus != current.loadLoginStatus,
-      builder: (context, state) {
-        return SingleChildScrollView(
-<<<<<<< HEAD
-          child: AutofillGroup(
-            child: Form(
-              key: _cubit.loginFormKey,
-              child: Column(
-                spacing: 24,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  76.height,
-                  _buildListInputForm(),
-                  _buildButtonLogin(),
-                ],
-              ),
-=======
-          child: Form(
-            key: _cubit.loginFormKey,
-            child: Column(
-              spacing: 24,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [76.height, _buildListInputForm(), _buildButtonLogin()],
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
-            ),
+    return SingleChildScrollView(
+      child: AutofillGroup(
+        child: Form(
+          key: _cubit.loginFormKey,
+          child: Column(
+            spacing: 24,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [76.height, _buildListInputForm(), _buildButtonLogin()],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
   Widget _buildListInputForm() {
     return BlocBuilder<LoginCubit, LoginState>(
-      buildWhen: (previous, current) => previous.isSubmit != current.isSubmit,
+      buildWhen: (previous, current) =>
+          previous.isSubmit != current.isSubmit ||
+          previous.loadLoginStatus != current.loadLoginStatus,
       builder: (context, state) {
         return Column(
           children: [
             AppSvgImage(AssetConstants.logoApp),
-            AppTextField(
-              focusNode: _cubit.mstFocusNode,
-              controller: _cubit.mstController,
-              labelText: "Mã số thuế",
-              hintText: "Mã số thuế",
-              validator: (value) => ValidatorUtils.validateMstOrCCCd(value),
-              keyboardType: TextInputType.numberWithOptions(
-                signed: true,
-                decimal: false,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  ValidatorUtils.inputNumberRegex,
+            ShakeAnimationWidget(
+              shake: state.loadLoginStatus == LoadStatus.failure,
+              child: AppTextField(
+                focusNode: _cubit.mstFocusNode,
+                controller: _cubit.mstController,
+                labelText: "Mã số thuế",
+                hintText: "Mã số thuế",
+                validator: (value) => ValidatorUtils.validateMstOrCCCd(value),
+                keyboardType: TextInputType.numberWithOptions(
+                  signed: true,
+                  decimal: false,
                 ),
-              ],
-              autovalidateMode: state.isSubmit
-                  ? AutovalidateMode.always
-                  : AutovalidateMode.disabled,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                    ValidatorUtils.inputNumberRegex,
+                  ),
+                ],
+                suffixIcon: state.loadLoginStatus == LoadStatus.failure
+                    ? AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: const Icon(
+                          Icons.error,
+                          key: ValueKey('error'),
+                          color: Colors.red,
+                        ),
+                      )
+                    : null,
+                autovalidateMode: state.isSubmit
+                    ? AutovalidateMode.always
+                    : AutovalidateMode.disabled,
 
-              textInputAction: TextInputAction.next,
-              onSubmitted: (_) {
-                FocusScope.of(context).requestFocus(_cubit.accountFocusNode);
-              },
-            ),
-<<<<<<< HEAD
-
-=======
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
-            AppTextField(
-              focusNode: _cubit.accountFocusNode,
-              controller: _cubit.accountController,
-              labelText: "Tài khoản",
-              hintText: "Tài khoản",
-<<<<<<< HEAD
-              autofillHints: [AutofillHints.username],
-
-=======
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
-              validator: (value) => ValidatorUtils.validateRequiredField(
-                value,
-                title: "Tài khoản",
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(_cubit.accountFocusNode);
+                },
               ),
-              autovalidateMode: state.isSubmit
-                  ? AutovalidateMode.always
-                  : AutovalidateMode.disabled,
-
-              textInputAction: TextInputAction.next,
-              onSubmitted: (_) {
-                FocusScope.of(context).requestFocus(_cubit.passwordFocusNode);
-              },
             ),
-            AppPasswordTextField(
-              focusNode: _cubit.passwordFocusNode,
-              controller: _cubit.passwordController,
-              obscureTextController: _cubit.obscureTextController,
-              labelText: "Mật khẩu",
-              hintText: "Mật khẩu",
-              validator: (value) => ValidatorUtils.validatePassword(value),
-              enableSuffixIcon: true,
-<<<<<<< HEAD
-              autofillHints: [AutofillHints.password],
-=======
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
-              autovalidateMode: state.isSubmit
-                  ? AutovalidateMode.always
-                  : AutovalidateMode.disabled,
+            ShakeAnimationWidget(
+              shake: state.loadLoginStatus == LoadStatus.failure,
+              child: AppTextField(
+                focusNode: _cubit.accountFocusNode,
+                controller: _cubit.accountController,
+                labelText: "Tài khoản",
+                hintText: "Tài khoản",
+                autofillHints: [AutofillHints.username],
 
-              textInputAction: TextInputAction.done,
-              onSubmitted: () {
-                _handleLoginPressed();
-              },
+                suffixIcon: state.loadLoginStatus == LoadStatus.failure
+                    ? AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: const Icon(
+                          Icons.error,
+                          key: ValueKey('error'),
+                          color: Colors.red,
+                        ),
+                      )
+                    : null,
+                validator: (value) => ValidatorUtils.validateRequiredField(
+                  value,
+                  title: "Tài khoản",
+                ),
+                autovalidateMode: state.isSubmit
+                    ? AutovalidateMode.always
+                    : AutovalidateMode.disabled,
+
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) {
+                  FocusScope.of(context).requestFocus(_cubit.passwordFocusNode);
+                },
+              ),
+            ),
+            ShakeAnimationWidget(
+              shake: state.loadLoginStatus == LoadStatus.failure,
+              child: AppPasswordTextField(
+                focusNode: _cubit.passwordFocusNode,
+                controller: _cubit.passwordController,
+                obscureTextController: _cubit.obscureTextController,
+                labelText: "Mật khẩu",
+                hintText: "Mật khẩu",
+                validator: (value) => ValidatorUtils.validatePassword(value),
+                enableSuffixIcon: true,
+                suffixIcon: state.loadLoginStatus == LoadStatus.failure
+                    ? AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: const Icon(
+                          Icons.error,
+                          key: ValueKey('error'),
+                          color: Colors.red,
+                        ),
+                      )
+                    : null,
+                autofillHints: [AutofillHints.password],
+
+                autovalidateMode: state.isSubmit
+                    ? AutovalidateMode.always
+                    : AutovalidateMode.disabled,
+
+                textInputAction: TextInputAction.done,
+                onSubmitted: () {
+                  _handleLoginPressed();
+                },
+              ),
             ),
           ],
         );
