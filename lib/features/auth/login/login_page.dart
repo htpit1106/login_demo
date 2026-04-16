@@ -77,7 +77,6 @@ class _LoginPageChildState extends State<LoginPageChild> {
           previous.loadLoginStatus != current.loadLoginStatus,
       builder: (context, state) {
         return SingleChildScrollView(
-<<<<<<< HEAD
           child: AutofillGroup(
             child: Form(
               key: _cubit.loginFormKey,
@@ -90,14 +89,6 @@ class _LoginPageChildState extends State<LoginPageChild> {
                   _buildButtonLogin(),
                 ],
               ),
-=======
-          child: Form(
-            key: _cubit.loginFormKey,
-            child: Column(
-              spacing: 24,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [76.height, _buildListInputForm(), _buildButtonLogin()],
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
             ),
           ),
         );
@@ -136,20 +127,12 @@ class _LoginPageChildState extends State<LoginPageChild> {
                 FocusScope.of(context).requestFocus(_cubit.accountFocusNode);
               },
             ),
-<<<<<<< HEAD
 
-=======
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
             AppTextField(
               focusNode: _cubit.accountFocusNode,
               controller: _cubit.accountController,
               labelText: "Tài khoản",
               hintText: "Tài khoản",
-<<<<<<< HEAD
-              autofillHints: [AutofillHints.username],
-
-=======
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
               validator: (value) => ValidatorUtils.validateRequiredField(
                 value,
                 title: "Tài khoản",
@@ -171,10 +154,7 @@ class _LoginPageChildState extends State<LoginPageChild> {
               hintText: "Mật khẩu",
               validator: (value) => ValidatorUtils.validatePassword(value),
               enableSuffixIcon: true,
-<<<<<<< HEAD
               autofillHints: [AutofillHints.password],
-=======
->>>>>>> 7a1c2ff (feat: refactor login page and optimize login submission logic)
               autovalidateMode: state.isSubmit
                   ? AutovalidateMode.always
                   : AutovalidateMode.disabled,
