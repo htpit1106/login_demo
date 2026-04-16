@@ -53,15 +53,21 @@ class FirestoreService {
     return null;
   }
 
-  Future<void> lockUser(String taxIdOrId) async {
+  Future<void> lockOrUnlockUser(
+    String taxIdOrId, {
+    required bool enable,
+  }) async {
     try {
-      final lockUntil = DateTime.now().toUtc().add(Duration(seconds: 5));
+      if (enable) {
+        await _firestore.collection('accounts').doc(taxIdOrId).update({
+          'enable': true,
+          'failed_login_count': 0,
+          'lock_until': null,
+        });
+        return;
+      }
+      final lockUntil = DateTime.now().toUtc().add(const Duration(seconds: 5));
 
-      await _firestore.collection('accounts').doc(taxIdOrId).update({
-        'enable': false,
-        'lock_until': lockUntil,
-      });
-      // update lockUtil and enable state
       await _firestore.collection('accounts').doc(taxIdOrId).update({
         'enable': false,
         'lock_until': lockUntil.toIso8601String(),
