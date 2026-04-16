@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/configs/app_configs.dart';
-import 'package:login_demo/core/data/database/hive_helper.dart';
-import 'package:login_demo/core/data/database/secure_storage_helper.dart';
-import 'package:login_demo/core/data/repositories/auth_repository.dart';
+import 'package:login_demo/data/database/hive_helper.dart';
+import 'package:login_demo/data/database/secure_storage_helper.dart';
+import 'package:login_demo/data/repositories/auth_repository.dart';
 import 'package:login_demo/core/utils/utils.dart';
 
 import 'package:login_demo/features/intro/splash/splash_navigator.dart';

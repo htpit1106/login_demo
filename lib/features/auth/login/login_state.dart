@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:login_demo/core/data/model/enums/load_status.dart';
-import 'package:login_demo/core/data/model/enums/login_status.dart';
+import 'package:login_demo/data/model/enums/load_status.dart';
+import 'package:login_demo/data/model/enums/login_status.dart';
 
 class LoginState extends Equatable {
   final LoadStatus loadLoginStatus;

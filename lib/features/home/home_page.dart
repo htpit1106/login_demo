@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:login_demo/core/constants/asset_constants.dart';
+import 'package:login_demo/core/global/app_cubit.dart';
+import 'package:login_demo/core/global/app_state.dart';
+import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/theme/text_style.dart';
+import 'package:login_demo/core/widget/image/app_svg_image.dart';
 import 'package:login_demo/core/widget/textfield/app_text_button.dart';
 import 'package:login_demo/features/home/home_navigator.dart';
 
@@ -71,16 +76,7 @@ class _HomePageChildState extends State<HomePageChild> {
                     ),
 
                     const SizedBox(height: 24),
-
-                    SizedBox(
-                      width: double.infinity,
-                      child: AppTextButton(
-                        title: "Đăng xuất",
-                        onTap: () {
-                          _cubit.handleLogout();
-                        },
-                      ),
-                    ),
+                    _buildButtonLogout(),
                   ],
                 );
               },
@@ -88,6 +84,36 @@ class _HomePageChildState extends State<HomePageChild> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildButtonLogout() {
+    return BlocBuilder<AppCubit, AppState>(
+      buildWhen: (previous, current) =>
+          previous.onBiometric != current.onBiometric,
+      builder: (context, state) {
+        return SizedBox(
+          width: double.infinity,
+          child: Row(
+            children: [
+              Expanded(
+                child: AppTextButton(
+                  title: "Đăng xuất",
+                  onTap: () {
+                    _cubit.handleLogout();
+                  },
+                ),
+              ),
+              AppSvgImage(
+                AssetConstants.fingerPrint,
+                color: state.onBiometric == true
+                    ? AppColors.primary
+                    : AppColors.border,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

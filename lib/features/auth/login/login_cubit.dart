@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:login_demo/core/data/database/hive_helper.dart';
-import 'package:login_demo/core/data/database/secure_storage_helper.dart';
-import 'package:login_demo/core/data/model/entities/account_entity.dart';
-import 'package:login_demo/core/data/model/enums/load_status.dart';
-import 'package:login_demo/core/data/model/enums/login_status.dart';
-import 'package:login_demo/core/data/repositories/auth_repository.dart';
+import 'package:login_demo/data/database/hive_helper.dart';
+import 'package:login_demo/data/database/secure_storage_helper.dart';
+import 'package:login_demo/data/model/entities/account_entity.dart';
+import 'package:login_demo/data/model/enums/load_status.dart';
+import 'package:login_demo/data/model/enums/login_status.dart';
+import 'package:login_demo/data/repositories/auth_repository.dart';
 import 'package:login_demo/core/utils/utils.dart';
 import 'package:login_demo/core/widget/button/app_password_text_field.dart';
 import 'package:login_demo/features/auth/login/login_navigator.dart';
@@ -56,7 +56,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     emit(state.copyWith(loadLoginStatus: LoadStatus.loading));
 
-    final result = await authRepository.login(
+    final result = await authRepository.loginByTaxId(
       taxIdOrId: mstController.text,
       password: passwordController.text,
       username: accountController.text,
@@ -121,5 +121,11 @@ class LoginCubit extends Cubit<LoginState> {
     AppRouter.markAuthenticated();
     emit(state.copyWith(loadLoginStatus: LoadStatus.success));
     navigator.openHome();
+  }
+
+  void onBiometricLogin() async {
+    final session = await SecureStorageHelper.instance.getAccessToken();
+
+    if (session != null) {}
   }
 }

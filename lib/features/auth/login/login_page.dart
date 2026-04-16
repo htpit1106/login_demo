@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
+import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/utils/validator_utils.dart';
 import 'package:login_demo/core/widget/button/app_icon_text_button.dart';
 import 'package:login_demo/core/widget/button/app_password_text_field.dart';
@@ -174,12 +175,22 @@ class _LoginPageChildState extends State<LoginPageChild> {
       buildWhen: (previous, current) =>
           previous.loadLoginStatus != current.loadLoginStatus,
       builder: (context, state) {
-        return AppTextButton(
-          title: "Đăng nhâp",
-          width: MediaQuery.widthOf(context),
-          onTap: () {
-            _handleLoginPressed();
-          },
+        return Row(
+          children: [
+            Expanded(
+              child: AppTextButton(
+                title: "Đăng nhâp",
+                onTap: () {
+                  _handleLoginPressed();
+                },
+              ),
+            ),
+            AppSvgImage(
+              AssetConstants.fingerPrint,
+              color: AppColors.primary,
+              colorFilter: ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
+            ),
+          ],
         );
       },
     );

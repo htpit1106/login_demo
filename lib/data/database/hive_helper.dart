@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:login_demo/core/configs/app_configs.dart';
-import 'package:login_demo/core/data/model/entities/account_entity.dart';
+import 'package:login_demo/data/model/entities/account_entity.dart';
 
 class HiveHelper {
   HiveHelper._();
