@@ -23,7 +23,6 @@ class AppTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final double prefixIconWidth;
   final Widget? suffixIcon;
-  final double suffixIconWidth;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final int? maxLines;
@@ -64,7 +63,6 @@ class AppTextField extends StatelessWidget {
     this.prefixIcon,
     this.prefixIconWidth = double.maxFinite,
     this.suffixIcon,
-    this.suffixIconWidth = double.maxFinite,
     this.onChanged,
     this.maxLines = 1,
     this.minLines = 1,
@@ -169,7 +167,6 @@ class AppTextField extends StatelessWidget {
               );
             },
           ),
-      suffixIconConstraints: BoxConstraints(maxWidth: suffixIconWidth),
       floatingLabelBehavior: FloatingLabelBehavior.auto,
     );
 
