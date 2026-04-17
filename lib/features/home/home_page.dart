@@ -18,8 +18,10 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          HomeCubit(navigator: HomeNavigator(context: context)),
+      create: (context) => HomeCubit(
+        navigator: HomeNavigator(context: context),
+        appCubit: context.read(),
+      ),
       child: HomePageChild(),
     );
   }
@@ -104,11 +106,16 @@ class _HomePageChildState extends State<HomePageChild> {
                   },
                 ),
               ),
-              AppSvgImage(
-                AssetConstants.fingerPrint,
-                color: state.onBiometric == true
-                    ? AppColors.primary
-                    : AppColors.border,
+              InkWell(
+                onTap: () {
+                  _cubit.onPressFingerPrint();
+                },
+                child: AppSvgImage(
+                  AssetConstants.fingerPrint,
+                  color: state.onBiometric == true
+                      ? AppColors.primary
+                      : AppColors.border,
+                ),
               ),
             ],
           ),

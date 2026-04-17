@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:login_demo/core/global/app_cubit.dart';
+import 'package:login_demo/core/services/biometric_service.dart';
 import 'package:login_demo/data/database/hive_helper.dart';
 import 'package:login_demo/data/database/secure_storage_helper.dart';
 import 'package:login_demo/data/model/entities/account_entity.dart';
+import 'package:login_demo/data/model/enums/biometric_status.dart';
 import 'package:login_demo/data/model/enums/load_status.dart';
 import 'package:login_demo/data/model/enums/login_status.dart';
 import 'package:login_demo/data/repositories/auth_repository.dart';
@@ -15,9 +18,12 @@ import 'package:login_demo/navigator/app_router.dart';
 class LoginCubit extends Cubit<LoginState> {
   final AuthRepository authRepository;
   final LoginNavigator navigator;
-
-  LoginCubit({required this.authRepository, required this.navigator})
-    : super(const LoginState());
+  final AppCubit appCubit;
+  LoginCubit({
+    required this.authRepository,
+    required this.navigator,
+    required this.appCubit,
+  }) : super(const LoginState());
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController mstController = TextEditingController();
   final TextEditingController accountController = TextEditingController();
@@ -28,7 +34,7 @@ class LoginCubit extends Cubit<LoginState> {
   final FocusNode passwordFocusNode = FocusNode();
 
   void init() {
-    createAccount();
+    // createAccount();
   }
 
   void createAccount() {
@@ -123,9 +129,34 @@ class LoginCubit extends Cubit<LoginState> {
     navigator.openHome();
   }
 
-  void onBiometricLogin() async {
-    final session = await SecureStorageHelper.instance.getAccessToken();
+  Future<void> loginWithBiometrics() async {
+    final onBiometricLogin = await checkOnBiometricLogin();
+    if (!onBiometricLogin) {
+      appCubit.setOnBiometric(false);
+      AppRouter.markUnauthenticated();
+      navigator.openLoginPage();
+      _showError("Đăng nhập để bật xác thực sinh chắc học");
+      return;
+    } else {
+      final result = await BiometricService.instance.authenticate();
 
-    if (session != null) {}
+      if (result == BiometricStatus.success) {
+        AppRouter.markAuthenticated();
+        navigator.openHome();
+      } else {
+        AppRouter.markUnauthenticated();
+        _showError(result.message);
+      }
+    }
+  }
+
+  Future<bool> checkOnBiometricLogin() async {
+    final accessToken = await SecureStorageHelper.instance.getAccessToken();
+    if (accessToken != null &&
+        accessToken["isBiometric"] == true &&
+        accessToken["sessionToken"] != null) {
+      return true;
+    }
+    return false;
   }
 }

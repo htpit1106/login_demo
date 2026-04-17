@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
+import 'package:login_demo/core/global/app_cubit.dart';
+import 'package:login_demo/core/global/app_state.dart';
 import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/utils/validator_utils.dart';
 import 'package:login_demo/core/widget/button/app_icon_text_button.dart';
@@ -23,6 +25,7 @@ class LoginPage extends StatelessWidget {
       create: (context) => LoginCubit(
         authRepository: context.read(),
         navigator: LoginNavigator(context: context),
+        appCubit: context.read(),
       ),
       child: LoginPageChild(),
     );
@@ -185,10 +188,20 @@ class _LoginPageChildState extends State<LoginPageChild> {
                 },
               ),
             ),
-            AppSvgImage(
-              AssetConstants.fingerPrint,
-              color: AppColors.primary,
-              colorFilter: ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
+            InkWell(
+              onTap: () {
+                _cubit.loginWithBiometrics();
+              },
+              child: BlocBuilder<AppCubit, AppState>(
+                buildWhen: (previous, current) =>
+                    previous.onBiometric != current.onBiometric,
+                builder: (c, s) {
+                  return AppSvgImage(
+                    AssetConstants.fingerPrint,
+                    color: s.onBiometric ? AppColors.primary : AppColors.border,
+                  );
+                },
+              ),
             ),
           ],
         );
