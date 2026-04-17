@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:login_demo/core/data/database/hive_helper.dart';
-import 'package:login_demo/core/data/database/secure_storage_helper.dart';
-import 'package:login_demo/core/data/model/entities/account_entity.dart';
-import 'package:login_demo/core/data/model/enums/load_status.dart';
-import 'package:login_demo/core/data/model/enums/login_status.dart';
-import 'package:login_demo/core/data/repositories/auth_repository.dart';
+import 'package:login_demo/core/global/app_cubit.dart';
+import 'package:login_demo/core/services/biometric_service.dart';
+import 'package:login_demo/data/database/hive_helper.dart';
+import 'package:login_demo/data/database/secure_storage_helper.dart';
+import 'package:login_demo/data/model/entities/account_entity.dart';
+import 'package:login_demo/data/model/enums/biometric_status.dart';
+import 'package:login_demo/data/model/enums/load_status.dart';
+import 'package:login_demo/data/model/enums/login_status.dart';
+import 'package:login_demo/data/repositories/auth_repository.dart';
 import 'package:login_demo/core/utils/utils.dart';
 import 'package:login_demo/core/widget/button/app_password_text_field.dart';
 import 'package:login_demo/features/auth/login/login_navigator.dart';
@@ -15,9 +18,12 @@ import 'package:login_demo/navigator/app_router.dart';
 class LoginCubit extends Cubit<LoginState> {
   final AuthRepository authRepository;
   final LoginNavigator navigator;
-
-  LoginCubit({required this.authRepository, required this.navigator})
-    : super(const LoginState());
+  final AppCubit appCubit;
+  LoginCubit({
+    required this.authRepository,
+    required this.navigator,
+    required this.appCubit,
+  }) : super(const LoginState());
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController mstController = TextEditingController();
   final TextEditingController accountController = TextEditingController();
@@ -28,7 +34,7 @@ class LoginCubit extends Cubit<LoginState> {
   final FocusNode passwordFocusNode = FocusNode();
 
   void init() {
-    createAccount();
+    // createAccount();
   }
 
   void createAccount() {
@@ -56,7 +62,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     emit(state.copyWith(loadLoginStatus: LoadStatus.loading));
 
-    final result = await authRepository.login(
+    final result = await authRepository.loginByTaxId(
       taxIdOrId: mstController.text,
       password: passwordController.text,
       username: accountController.text,
@@ -123,5 +129,36 @@ class LoginCubit extends Cubit<LoginState> {
     AppRouter.markAuthenticated();
     emit(state.copyWith(loadLoginStatus: LoadStatus.success));
     navigator.openHome();
+  }
+
+  Future<void> loginWithBiometrics() async {
+    final onBiometricLogin = await checkOnBiometricLogin();
+    if (!onBiometricLogin) {
+      appCubit.setOnBiometric(false);
+      AppRouter.markUnauthenticated();
+      navigator.openLoginPage();
+      _showError("Đăng nhập để bật xác thực sinh chắc học");
+      return;
+    } else {
+      final result = await BiometricService.instance.authenticate();
+
+      if (result == BiometricStatus.success) {
+        AppRouter.markAuthenticated();
+        navigator.openHome();
+      } else {
+        AppRouter.markUnauthenticated();
+        _showError(result.message);
+      }
+    }
+  }
+
+  Future<bool> checkOnBiometricLogin() async {
+    final accessToken = await SecureStorageHelper.instance.getAccessToken();
+    if (accessToken != null &&
+        accessToken["isBiometric"] == true &&
+        accessToken["sessionToken"] != null) {
+      return true;
+    }
+    return false;
   }
 }

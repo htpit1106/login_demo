@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/constants/asset_constants.dart';
 import 'package:login_demo/core/data/model/enums/load_status.dart';
 import 'package:login_demo/core/extensions/num_extension.dart';
+import 'package:login_demo/core/global/app_cubit.dart';
+import 'package:login_demo/core/global/app_state.dart';
+import 'package:login_demo/core/theme/app_colors.dart';
 import 'package:login_demo/core/utils/validator_utils.dart';
 import 'package:login_demo/core/widget/button/app_icon_text_button.dart';
 import 'package:login_demo/core/widget/button/app_password_text_field.dart';
@@ -24,6 +27,7 @@ class LoginPage extends StatelessWidget {
       create: (context) => LoginCubit(
         authRepository: context.read(),
         navigator: LoginNavigator(context: context),
+        appCubit: context.read(),
       ),
       child: LoginPageChild(),
     );
@@ -208,12 +212,32 @@ class _LoginPageChildState extends State<LoginPageChild> {
       buildWhen: (previous, current) =>
           previous.loadLoginStatus != current.loadLoginStatus,
       builder: (context, state) {
-        return AppTextButton(
-          title: "Đăng nhâp",
-          width: MediaQuery.widthOf(context),
-          onTap: () {
-            _handleLoginPressed();
-          },
+        return Row(
+          children: [
+            Expanded(
+              child: AppTextButton(
+                title: "Đăng nhâp",
+                onTap: () {
+                  _handleLoginPressed();
+                },
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                _cubit.loginWithBiometrics();
+              },
+              child: BlocBuilder<AppCubit, AppState>(
+                buildWhen: (previous, current) =>
+                    previous.onBiometric != current.onBiometric,
+                builder: (c, s) {
+                  return AppSvgImage(
+                    AssetConstants.fingerPrint,
+                    color: s.onBiometric ? AppColors.primary : AppColors.border,
+                  );
+                },
+              ),
+            ),
+          ],
         );
       },
     );

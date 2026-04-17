@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:login_demo/core/data/model/entities/account_entity.dart';
+import 'package:login_demo/data/model/entities/account_entity.dart';
 
 class FirestoreService {
   FirestoreService._privateConstructor();

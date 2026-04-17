@@ -10,6 +10,7 @@ class AppSvgImage extends StatelessWidget {
     this.fit = BoxFit.contain,
     this.colorFilter,
     this.package,
+    this.color,
   });
 
   final String path;
@@ -18,6 +19,7 @@ class AppSvgImage extends StatelessWidget {
   final BoxFit fit;
   final ColorFilter? colorFilter;
   final String? package;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +29,7 @@ class AppSvgImage extends StatelessWidget {
       height: height,
       fit: fit,
       colorFilter: colorFilter,
+      color: color,
       package: package,
     );
   }

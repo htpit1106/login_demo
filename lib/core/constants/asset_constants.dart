@@ -16,7 +16,7 @@ class AssetConstants {
   static const String headphone = "$_iconsBasePath/headphone.svg";
   static const String search = "$_iconsBasePath/search.svg";
   static const String facebook = "$_iconsBasePath/facebook.svg";
-
+  static const String fingerPrint = "$_iconsBasePath/fingerprint.svg";
   //splash
   static const String splashAnimate = "$_animateBashPath/splash_animate.gif";
 }

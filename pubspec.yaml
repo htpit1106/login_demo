@@ -58,6 +58,7 @@ dependencies:
   equatable: ^2.0.8
   flutter_native_splash:
   connectivity_plus:
+  local_auth: ^3.0.1
 
   #navigator
   go_router:
