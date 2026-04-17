@@ -14,17 +14,23 @@ class HiveHelper {
 
   Box? _box;
   final String _boxName = AppConfigs.hiveBoxName;
+  Future<void> init() async {
+    try {
+      _box = await Hive.openBox(_boxName);
+    } catch (e) {
+      log('Hive init error: $e');
+    }
+  }
 
-  Future<Box> _openBox() async {
-    if (_box != null && _box!.isOpen) return _box!;
-    _box = await Hive.openBox(_boxName);
+  Box get box {
+    if (_box == null || !_box!.isOpen) {
+      throw Exception("Hive chưa được init.");
+    }
     return _box!;
   }
 
   Future<void> saveAccounts(List<AccountEntity>? accounts) async {
     try {
-      final box = await _openBox();
-
       if (accounts == null) return;
       final map = {for (var acc in accounts) acc.taxIdOrId: acc.toJson()};
 
@@ -36,7 +42,6 @@ class HiveHelper {
 
   Future<void> saveAccount(AccountEntity account) async {
     try {
-      final box = await _openBox();
       await box.put(account.taxIdOrId, account.toJson());
     } catch (e) {
       log(e.toString());
@@ -45,7 +50,6 @@ class HiveHelper {
 
   Future<AccountEntity?> getAccount(String taxIdOrId) async {
     try {
-      final box = await _openBox();
       final data = box.get(taxIdOrId);
       if (data == null) return null;
       return AccountEntity.fromJson(Map<String, dynamic>.from(data));
@@ -57,7 +61,6 @@ class HiveHelper {
 
   Future<void> clear() async {
     try {
-      final box = await _openBox();
       await box.clear();
     } catch (e, st) {
       log('Hive clear error: $e', stackTrace: st);

@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_demo/core/configs/app_configs.dart';
 import 'package:login_demo/core/global/app_cubit.dart';
-import 'package:login_demo/core/services/biometric_service.dart';
 import 'package:login_demo/data/database/hive_helper.dart';
 import 'package:login_demo/data/database/secure_storage_helper.dart';
 import 'package:login_demo/data/repositories/auth_repository.dart';
@@ -31,7 +30,7 @@ class SplashCubit extends Cubit<SplashState> {
 
   Future<void> autoLogin() async {
     // final isLoggedIn = await checkLogin();
-    // await _ensureMinSplashTime();
+    await _ensureMinSplashTime();
     // if (isLoggedIn) {
     //   AppRouter.markAuthenticated();
     //   navigator.openHome();
